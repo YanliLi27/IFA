@@ -459,10 +459,55 @@ class CAMAgent():
                 ea.evalsummary(tc)
 
             
-    def ind_return(self, cr_dataset:Union[None, DataLoader],
+    def indiv_return(self, x:torch.Tensor,  # make sure the input is a 4-dimension tensor
                     creator_target_category:Union[None, str, int, list]='Default',
                     cluster:Union[None, list[int], np.array]=None) -> np.array:  # [batch, (slice), L, W]
         # use origin -- False
         # use eval -- False
-        pass
-    
+        if creator_target_category=='Default':
+            creator_target_category = self.select_category
+            print('use default and something goes wrong with previous assertion')
+            # the load im for cam creator
+            # this could be None, int, list, when self.target_category == None
+            # None: get the prediction-related CAMs, while the target_category for IM creation is None
+            # int&list: get the CAM for certain category, while the target_category for IM creation is None
+        creator_tc = creator_target_category if self.select_category==None else self.select_category
+        if not isinstance(creator_tc, list):
+            creator_tc = [creator_tc]
+        if not isinstance(cluster, None):
+            if np.sum(np.asarray(cluster))!=len(np.asarray(creator_tc)):
+                raise AttributeError(f'the cluster number {np.sum(np.asarray(cluster))} given \
+                                     doesnt match that of selected outputs {len(np.asarray(creator_tc))}')
+
+        # for cam calculation
+        device = self.device
+        model = self.model.to(device=device)
+        model.eval()
+
+        # -------------- start cam calculation -------------- #
+        x = x.to(dtype=torch.float32).to(device)   # [batch, groups/channels, (D), L, W]
+        tc_cam = []  # 仅用于需要合并不同类cam的情况下使用
+        for tc in creator_tc:
+            rescaler = self.rescaler['uniform'] if (self.rescale=='multi' or self.rescale==None) else self.rescaler[str(tc)]
+            grayscale_cam, _, _, _\
+                = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
+                                    im=self.im[str(tc)], out_logit=False, rescaler=rescaler)
+            tc_cam.append(grayscale_cam)  # tc_cam: tc_len* batch* (target_layer_aggregated)_array[groups, (depth), length, width]
+                # tc_cam: [5(tc) * [16 * [1(groups), 256, 256]]] / [5(tc) * [16 * [1(groups), depth, 256, 256]]]
+        tc_cam = np.asarray(tc_cam)  # [tc, batch, groups, (D), L, W]
+        newindex = set([1, 2, 0].extend([i for i in range(3, len(tc_cam.shape)+1)]))
+        tc_cam = np.transpose(np.asarray(tc_cam), newindex)   # [batch, groups, tc, (D), L, W]
+        # [batch, groups, tc, (D), L, W]
+        if not isinstance(cluster, None) and (max(cluster)>1):  # width-prior, merge cams required
+            camshape = tc_cam.shape
+            camshape[2] = len(cluster)
+            clustercam = np.zeros(camshape)
+            cluster_counter = 0 
+            for i in range(len(cluster)):
+                clustercam[:, :, i] = np.sum(tc_cam[:, :, cluster_counter:cluster_counter+cluster[i]], axis=2)
+                cluster_counter+=cluster[i]
+            tc_cam = clustercam  # [batch, groups/channels, cluster, (D), L, W]
+        # [batch, groups, cluster, (D), L, W]
+        return tc_cam  # [batch, groups, cluster/tc, (D), L, W]
+        # [1, 1, cluster/tc, (D), L, W]
+            
