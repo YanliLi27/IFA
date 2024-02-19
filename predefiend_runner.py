@@ -70,7 +70,7 @@ def naturalimage_runner(target_category:Union[None, int, str]=None, model_flag:s
                                 rescaler=None,  # outer scaler
                                 cam_type=None  # output 2D or 3D
                                 )
-                Agent.creator_main(cr_dataset=None, creator_target_category=None, eval_act=eval_flag, cam_save=cam_save,
+                Agent.creator_main(cr_dataset=None, creator_target_category=target_category, eval_act=eval_flag, cam_save=cam_save,
                                    cluster=None, use_origin=use_origin, max_iter=max_iter)
 
 

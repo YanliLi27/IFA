@@ -104,12 +104,14 @@ class EvalAgent():
             # for mutliclasses, use pos-neg to calculate
             if self.num_classes>2:
                 reg_corr_pred_matrix = []
-                for item in self.corr_pred_matrix:
+                for item in self.corr_pred_matrix[str(tc)]:
                     if item==tc:
                         reg_corr_pred_matrix.append(1)
                     else:
                         reg_corr_pred_matrix.append(0)
-                corr_pred_matrix = reg_corr_pred_matrix
+                corr_pred_matrix = np.asarray(reg_corr_pred_matrix)
+            else:
+                corr_pred_matrix = np.nan_to_num(self.corr_pred_matrix[str(tc)], copy=False, nan=0, posinf=0, neginf=0)
             corr_cam_matrix = np.nan_to_num(self.corr_cam_matrix[str(tc)], copy=False, nan=0, posinf=0, neginf=0)
             auc = roc_auc_score(corr_pred_matrix, corr_cam_matrix)
             print('outlier rate-- AUROC of <CAM & Label>: ', auc)
