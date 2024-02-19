@@ -265,14 +265,16 @@ class SharedCAM:  # only return an im or a cam
         else:
             raise ValueError(f'the length {len(input_tensor.shape)} of 3D weights is not valid')
 
-        im_weights = np.zeros([B, C])
+        im_weights = np.ones([B, C])
         if self.im is not None:  # if self.im not exist, use the original
-            im_weights[:] = self.im[target_category]  # self.im [num_classes, all_channels] - im_weights [batch_size, all_channels]
+            im_weights = self.im[target_category]  # self.im [num_classes, all_channels] - im_weights [batch_size, all_channels]
         # im_weights [batch_size, channels] 
-            if len(input_tensor.shape)==4:
-                im_weights = im_weights[:, :, None, None]   # [batch, im-channel, None, None] * [batch, channel, length, width]
-            elif len(input_tensor.shape)==5:
-                im_weights = im_weights[:, :, None, None, None]# [batch, im-channel, None, None, None] * [batch, channel, depth, length, width]
+        if len(input_tensor.shape)==4:
+            im_weights = im_weights[:, :, None, None]   # [batch, im-channel, None, None] * [batch, channel, length, width]
+        elif len(input_tensor.shape)==5:
+            im_weights = im_weights[:, :, None, None, None]# [batch, im-channel, None, None, None] * [batch, channel, depth, length, width]
+        else:
+            raise ValueError(f'not supported input shape: {input_tensor.shape}')
         try:
             weighted_activations = im_weights * weighted_activations 
         except:

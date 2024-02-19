@@ -18,7 +18,8 @@ class Artists:
         # 需要一个process origin的功能，确保尽可能简单
 
     
-    def show_cam_on_image2d(img: np.ndarray,
+    def show_cam_on_image2d(self,
+                            img: np.ndarray,
                             mask: np.ndarray,
                             use_rgb: bool = False,
                             colormap: int = cv2.COLORMAP_JET,
@@ -70,17 +71,22 @@ class Artists:
 
     
     def img_creator_2D(self, cam, origin, use_origin:bool=True):
-        # origin [channel, L, W]
+        # origin [self.groups, channel, L, W]  # cam [self.groups, L, W]
+        origin = origin - np.min(origin)
+        origin = origin / (np.max(origin) +1e-7)
+        if origin.shape[1] == 1:
+            origin = np.repeat(origin, repeats=3, axis=1)  # [G, 1, L, W] -> [G, 3, L, W]
+        origin = np.transpose(origin, axes=(0, 2, 3, 1))  # [G, L, W, 3]
         cam_image_group_list = []
         for j in range(self.groups):
-            cam_group = cam[j, :]  # [channel, L, W] --> [L, W]
-            cam_image_group = self.show_cam_on_image2d(origin[j], cam_group, use_rgb=True, use_origin=use_origin)
+            # cam [self.groups, L, W] --> [L, W], origin [self.groups, channel, L, W] --> [channel, L, W]
+            cam_image_group = self.show_cam_on_image2d(origin[j], cam[j], use_rgb=True, use_origin=use_origin)
             cam_image_group = cv2.cvtColor(cam_image_group, cv2.COLOR_RGB2BGR)
             cam_image_group_list.append(cam_image_group)
         
         origin_list = []
-        for img in origin:  # img_color_group [batch, organ_groups, y, x, 3] 
-            origin_list.append(img * 255)  # img - [L, W]
+        for j in range(self.groups):  # img_color_group [batch, organ_groups, y, x, 3] 
+            origin_list.append(origin[j] * 255)  # img - [C, L, W]
 
         concat_img_origin = cv2.hconcat(origin_list) # [x, N*y, 3]
 
@@ -96,47 +102,46 @@ class Artists:
         # origin [channel(groups*n), (D), L, W] 
         # channel exists only when D doesnt, group can exist when multiinput using group conv
         origin_shape = origin.shape
+        if len(origin.shape)==3: 
+            origin = np.reshape(origin, (self.groups, -1, origin_shape[-2], origin_shape[-1]))
+        elif len(origin.shape)==4:
+            origin = np.reshape(origin, (self.groups, -1, origin_shape[-3], origin_shape[-2], origin_shape[-1]))
+        origin_shape = origin.shape
         # cam [groups, (D), L, W]
         cam_shape = cam.shape
-
         # 四种情况：双3D出3D, \\ 双3D出2D, 双2D出2D, 3D+2D出2D根据groups来选
         if self.cam_type == '2D':
-            if len(cam_shape)==4 and len(origin_shape)==4:
-                if not cam_shape==origin_shape:
+            if len(cam_shape)==4 and len(origin_shape)==5:
+                if not cam_shape[-3:]==origin_shape[-3:]:
                     raise ValueError(f'the shape of the cam {cam_shape} should match that of origin {origin_shape}')
-                _, D, _, _ = origin_shape
-                for g in range(self.groups):  # [D, L, W]
-                    # channel exists only when D doesnt, group can exist when multiinput using group conv
-                    for d in range(D):
-                        concat_img_all = self.img_creator_2D(cam[g, d, :], origin[g, d, :], name_str, use_origin)
-                        save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_g{g}_s{d}.jpg')
-                        cv2.imwrite(save_name, concat_img_all)
-                        if self.backup:
-                            backup_name = save_name.replace('.jpg', '.npy')
-                            np.save(backup_name, np.asarray({'img':origin[g, d, :],'cam':cam[g, d, :]}))
-            elif len(cam_shape)==3 and len(origin_shape)==4:
-                _, D, _, _ = origin_shape
-                origin = origin[:, D//2, :]  # select a slice
-                for g in range(self.groups):
-                # cam2d and origin2d [groups, L, W]
-                    concat_img_all = self.img_creator_2D(cam[g, :], origin[g, :], name_str, use_origin)
-                    save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_g{g}.jpg')
+                _, D, _, _, _ = origin_shape
+                for d in range(D):
+                    concat_img_all = self.img_creator_2D(cam[:, d, :], origin[:, :, d, :], use_origin)
+                    # [G, D, L, W] -> [G, L, W], [G, C, D, L, W] -> [G, C, L, W]
+                    save_name = f'{name_str}_s{d}.jpg'
                     cv2.imwrite(save_name, concat_img_all)
                     if self.backup:
                         backup_name = save_name.replace('.jpg', '.npy')
-                        np.save(backup_name, np.asarray({'img':origin[g, :],'cam':cam[g, :]}))
-            elif len(cam_shape)==3 and len(origin_shape)==3:
-                for g in range(self.groups):
-                # cam2d and origin2d [groups, L, W]
-                    concat_img_all = self.img_creator_2D(cam[g, :], origin[g, :], name_str, use_origin)
-                    save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_g{g}.jpg')
-                    cv2.imwrite(save_name, concat_img_all)
-                    if self.backup:
-                        backup_name = save_name.replace('.jpg', '.npy')
-                        np.save(backup_name, np.asarray({'img':origin[g, :],'cam':cam[g, :]}))
+                        np.save(backup_name, np.asarray({'img':origin[:, d, :],'cam':cam[:, :, d, :]}))
+            elif len(cam_shape)==3 and len(origin.shape)==4:
+                concat_img_all = self.img_creator_2D(cam, origin, use_origin)
+                # [G, L, W] , [G, C, L, W]
+                save_name = f'{name_str}.jpg'
+                cv2.imwrite(save_name, concat_img_all)
+                if self.backup:
+                    backup_name = save_name.replace('.jpg', '.npy')
+                    np.save(backup_name, np.asarray({'img':origin,'cam':cam}))
+            elif len(cam_shape)==2 and len(origin.shape)==3:
+                concat_img_all = self.img_creator_2D(cam, origin, use_origin)
+                # [G, W] , [G, C, W]
+                save_name = f'{name_str}.jpg'
+                cv2.imwrite(save_name, concat_img_all)
+                if self.backup:
+                    backup_name = save_name.replace('.jpg', '.npy')
+                    np.save(backup_name, np.asarray({'img':origin,'cam':cam}))
 
         elif self.cam_type == '3D':
-            if not (len(origin_shape)==4 and len(cam_shape)==4):
+            if not (len(origin_shape)==5 and len(cam_shape)==4):
                 raise ValueError(f'shape of origin {origin_shape} and cam {cam_shape} doesnt meet the requirement of 3D output')
             for g in range(self.groups):
                 save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_g{self.groups}.nii.gz')

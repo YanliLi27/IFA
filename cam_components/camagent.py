@@ -134,6 +134,7 @@ class CAMAgent():
         self.value_min = {}
         self.im = {}
         # ------------------------------------------------------- get rescaler ------------------------------------------------------- #
+        self.rescaler = {}
         if (self.rescale) and (rescaler is None):
             # without outer input
             if not isinstance(select_category, list):
@@ -146,7 +147,6 @@ class CAMAgent():
             for tc in select_category:
                 self.im[str(tc)], self.value_max[str(tc)], self.value_min[str(tc)] = self._get_importances(im_path, tc)
 
-            self.rescaler = {}
             if 'multi' in self.rescale:
                 value_max = max(self.value_max.values)
                 value_min = min(self.value_min.values)
@@ -159,21 +159,23 @@ class CAMAgent():
                 
         else:
             self.rescaler['uniform'] = Rescaler(value_max=None, value_min=None, remove_minus_flag=self.rm, rescale_func='norm')
+            self.rescaler['None'] = Rescaler(value_max=None, value_min=None, remove_minus_flag=self.rm, rescale_func='norm')
         # ------------------------------------------------------- get rescaler ------------------------------------------------------- #
         # ------------------------------------------------------- get im masks ------------------------------------------------------- #
         # if self.im doesn't exist
-        if len(self.im.keys)==0 and (self.fs!='all'):
+        if len(self.im.keys())==0 and (self.fs!='all'):
             if not isinstance(select_category, list):
                     select_category = [select_category]
             for tc in select_category:
                 im_path = self.im_path[str(tc)]
                 if not os.path.isfile(im_path):
+                    print('only for importance matrix')
                     self._analyzer_main()
             for tc in select_category:
                 self.im[str(tc)], _, _ = self._get_importances(im_path, tc)
         else:
-            self.im['uniform'] == None
-            self.im['None'] == None
+            self.im['uniform'] = None
+            self.im['None'] = None
         # ------------------------------------------------------- get im masks ------------------------------------------------------- #
 
         # ------------------------------------------------------- call artists ------------------------------------------------------- #
@@ -231,8 +233,8 @@ class CAMAgent():
         in_fold_counter = 0
         in_fold_target_counter = np.zeros([self.num_classes], dtype=np.int16)
         im_overall = None  # 400 = number of channels per group
-        im_target = [[]*self.num_classes]
-        im_diff = [[]*self.num_classes]
+        im_target = [0] * self.num_classes
+        im_diff = [0] *self.num_classes
         # cammax & cammin for overall max-min normalization
         cam_grad_max_matrix = []
         cam_grad_min_matrix = []
@@ -255,7 +257,7 @@ class CAMAgent():
             if type(grayscale_cam)==list:
                 grayscale_cam = grayscale_cam[0]  # [1, all_channel] remove the target layers
             # grayscale_cam - [16, 512]
-            for i in range(self.batch_size): # [all_channel]
+            for i in range(grayscale_cam.shape[0]): # [all_channel]
                 single_grayscale_cam, single_predict_category, single_confidence = grayscale_cam[i], predict_category[i], confidence[i]
                 if confidence_weight_flag:
                     single_grayscale_cam = single_grayscale_cam * single_confidence
@@ -275,9 +277,9 @@ class CAMAgent():
                         im_overall = im_overall + single_grayscale_cam
                     in_fold_counter += 1
                     # 添加对应类的IM
-                    if im_target[single_predict_category]==[]:
-                        im_target[single_predict_category] = single_grayscale_cam
-                    else:
+                    if not isinstance(im_target[single_predict_category], type(np.array)):
+                        im_target[single_predict_category] = np.asarray(single_grayscale_cam)
+                    else:  # when list is empty
                         im_target[single_predict_category] = im_target[single_predict_category] + single_grayscale_cam
                     in_fold_target_counter[single_predict_category] += single_max_reviser
                    
@@ -321,14 +323,15 @@ class CAMAgent():
         creator_tc = creator_target_category if self.select_category==None else self.select_category
         if not isinstance(creator_tc, list):
             creator_tc = [creator_tc]
-        if not isinstance(cluster, None):
+        if cluster:
             if np.sum(np.asarray(cluster))!=len(np.asarray(creator_tc)):
                 raise AttributeError(f'the cluster number {np.sum(np.asarray(cluster))} given \
                                      doesnt match that of selected outputs {len(np.asarray(creator_tc))}')
 
         # create evaluation metric
         if eval_act is not False:
-            ea  = EvalAgent(save_path=self.record_dir, eval_act=eval_act, creator_tc=creator_tc, num_classes=self.num_classes)
+            ea  = EvalAgent(save_path=self.record_dir, eval_act=eval_act, creator_tc=creator_tc, 
+                            num_classes=self.num_classes, groups=self.groups)
             logit_flag = True if ('logit' in eval_act) else False
         # self.im_path = {}  'str(tc)'=xxx, 'uniform'=xxx
         # self.cam_dir = {}
@@ -360,10 +363,14 @@ class CAMAgent():
             tc_truth = []
 
             for tc in creator_tc:
-                rescaler = self.rescaler['uniform'] if (self.rescale=='multi') else self.rescaler[str(tc)]
+                if self.rescale=='multi':
+                    rescaler = self.rescaler['uniform']
+                else:
+                    rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['uniform']
+                im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
                 grayscale_cam, predict_category, pred_score, nega_score\
                     = self.camoperator(input_tensor=x, target_category=tc, gt=y, ifaoperation=False, 
-                                        im=self.im[str(tc)], out_logit=logit_flag, rescaler=rescaler)
+                                        im=im, out_logit=logit_flag, rescaler=rescaler)
             
                 # TODO check the size of these items, avoid differences caused by ram
                 # predict_category = predict_category[0] if isinstance(predict_category[0], list) else predict_category
@@ -400,10 +407,14 @@ class CAMAgent():
                 tc_pred_category = np.asarray(tc_pred_category)
                 tc_score = np.asarray(tc_score)
                 tc_truth = np.asarray(tc_truth)
-                newindex = set([1, 2, 0].extend([i for i in range(3, len(tc_cam.shape)+1)]))
-                tc_cam = np.transpose(np.asarray(tc_cam), newindex)   # [batch, groups, tc, (D), L, W]
+                if len(tc_cam.shape)==6:
+                    tc_cam = np.transpose(np.asarray(tc_cam), (1, 2, 0, 3, 4, 5))   # [batch, groups, tc, (D), L, W]
+                elif len(tc_cam.shape)==5:
+                    tc_cam = np.transpose(np.asarray(tc_cam), (1, 2, 0, 3, 4)) # [batch, groups, tc, L, W]
+                elif len(tc_cam.shape)==4:
+                    tc_cam = np.transpose(np.asarray(tc_cam), (1, 2, 0, 3))   # [batch, groups, tc, W]
                 # 如果集成就合并一下，如果不就挨个生成CAM
-                if not isinstance(cluster, None) and (max(cluster)>1):  # width-prior, merge cams required
+                if cluster and (max(cluster)>1):  # width-prior, merge cams required
                     camshape = tc_cam.shape
                     camshape[2] = len(cluster)
                     clustercam = np.zeros(camshape)
@@ -421,7 +432,9 @@ class CAMAgent():
                     tc_pred_category = clusterpredca  # [batch]
                     tc_score = clustersc
                     tc_truth = clustertr
-                    
+                tc_pred_category = np.squeeze(tc_pred_category)
+                tc_score = np.squeeze(tc_score)
+                tc_truth = np.squeeze(tc_truth)
                 # [batch, groups/channels, cluster/tc, (D), L, W]
                 # 只有两种情况：存2D和存3D，但是根据输入的维度在合并时有出入：
                     # 所有1D数据[batch, groups/channels, cluster/tc, W] 转2D
@@ -435,8 +448,13 @@ class CAMAgent():
                 for b in range(B):
                     counter+=1  # different samples
                     for c in range(C):
-                        name_str = os.path.join(self.cam_dir[str(c)], f'{counter}_pr{tc_pred_category[c]}_tr{tc_truth[c]}_cf{pred_score[c]}')
-                        Artists.img_create(tc_cam[b, :, c, ], origin[b, :], tc=c, 
+                        pr_str = str(tc_pred_category[b])[:4] if len(str(tc_pred_category[b]))>4 else str(tc_pred_category[b])
+                        tr_str = str(tc_truth[b])[:4] if len(str(tc_truth[b]))>4 else str(tc_truth[b])
+                        ps_str = str(pred_score[b])[:4] if len(str(pred_score[b]))>4 else str(pred_score[b])
+                        name_str = os.path.join(self.cam_dir[str(creator_tc[c])], f'{counter}_pr{pr_str}_tr{tr_str}_cf{ps_str}')
+                        self.artist.img_create(cam=tc_cam[b, :, c, ], origin=origin[b, :], tc=creator_tc[c], 
+                                               # [batch, groups, tc, (D), L, W] -> [groups, (D), L, W], 
+                                               # [batch, channel(groups), (D), L, W] -> [channel(groups), (D), L, W]
                                            name_str=name_str,
                                            use_origin=use_origin)
                         # input: [channel(groups*n), (D), L, W] & [groups, (D), L, W]
@@ -477,10 +495,14 @@ class CAMAgent():
         x = x.to(dtype=torch.float32).to(device)   # [batch, groups/channels, (D), L, W]
         tc_cam = []  # 仅用于需要合并不同类cam的情况下使用
         for tc in creator_tc:
-            rescaler = self.rescaler['uniform'] if (self.rescale=='multi') else self.rescaler[str(tc)]
+            if self.rescale=='multi':
+                    rescaler = self.rescaler['uniform']
+            else:
+                rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['uniform']
+            im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
             grayscale_cam, _, _, _\
                 = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
-                                    im=self.im[str(tc)], out_logit=False, rescaler=rescaler)
+                                    im=im, out_logit=False, rescaler=rescaler)
             tc_cam.append(grayscale_cam)  # tc_cam: tc_len* batch* (target_layer_aggregated)_array[groups, (depth), length, width]
                 # tc_cam: [5(tc) * [16 * [1(groups), 256, 256]]] / [5(tc) * [16 * [1(groups), depth, 256, 256]]]
         tc_cam = np.asarray(tc_cam)  # [tc, batch, groups, (D), L, W]

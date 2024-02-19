@@ -10,12 +10,13 @@ import torch.nn as nn
 
 
 class EvalAgent():
-    def __init__(self, save_path:dict, eval_act:Union[bool, str]=False, creator_tc:list=[None], num_classes:int=2) -> None:
+    def __init__(self, save_path:dict, eval_act:Union[bool, str]=False, creator_tc:list=[None], num_classes:int=2, groups:int=1) -> None:
         assert eval_act in [False, 'false', 'basic', 'logit', 'corr', 'corr_logit']
         # eval - corr #  以下这些需要选定一个特定的类别
         self.save_path:dict = save_path  # tc:path
         self.eval_func = eval_act
         self.num_classes:int = num_classes 
+        self.groups:int = groups
         self.counter = {}   # for global calculation
         self.corr_cam_matrix = {}  # tc: cam_sum_value for each sample -- an array
         self.corr_pred_matrix = {}  # tc: pred_class for each sample -- an array  # 计算二值化的AUC

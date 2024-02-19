@@ -47,30 +47,30 @@ def naturalimage_runner(target_category:Union[None, int, str]=None, model_flag:s
         cam_method_zoo = cam_method
     # maxmin_flag_zoo = [True, False]  # intensity scaling
     # remove_minus_flag_zoo = [False, True]  # remove the part below zero, default: True in the original Grad CAM
-    mm_rm_zoo =  [[True, False], [False, True]]
-    im_selection_mode_zoo = ['reverse_diff_top']#, 'diff_top', 'all']  # use feature selection or not -- relied on the importance matrices
+    mm_rm_zoo =  [[True, False], [False, True],]
+    im_selection_mode_zoo = ['all', 'diff_top']#, 'diff_top', 'reverse_diff_top']  # use feature selection or not -- relied on the importance matrices
 
     for method in cam_method_zoo:
-        for im in im_selection_mode_zoo:
-            for um in mm_rm_zoo:
-                mm, rm = um
-                if mm and tan_flag:
-                    mm = 'tanh'
-                else:
-                    mm = 'norm'
+        for um in mm_rm_zoo:
+            mm, rm = um
+            if mm:
+                mm = 'tanh' if tan_flag else 'norm'
+            else:
+                mm = False
+            for im in im_selection_mode_zoo:
                 Agent = CAMAgent(model, target_layer, dataset,  
                                 groups, ram,
                                 # optional:
                                 cam_method=method, name_str=f'{task}_{fold_order}',# cam method and im paths and cam output
                                 batch_size=batch_size, select_category=target_category,  # info of the running process
-                                rescale=mm,  remove_minus_flag=rm, scale_ratio=1.5,
+                                rescale=mm,  remove_minus_flag=rm, scale_ratio=1,
                                 feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
                                 randomization=None,  # model randomization for sanity check
                                 use_pred=use_pred,
                                 rescaler=None,  # outer scaler
                                 cam_type=None  # output 2D or 3D
                                 )
-                Agent.creator_main(cr_dataset=None, creator_target_category='Default', eval_act=eval_flag, cam_save=cam_save,
+                Agent.creator_main(cr_dataset=None, creator_target_category=None, eval_act=eval_flag, cam_save=cam_save,
                                    cluster=None, use_origin=use_origin, max_iter=max_iter)
 
 
@@ -117,7 +117,7 @@ def catsdog3d_runner(target_category:Union[None, int, str]=1, task:str='catsdogs
                                 # optional:
                                 cam_method=method, name_str=f'{task}_{fold_order}',# cam method and im paths and cam output
                                 batch_size=batch_size, select_category=target_category,  # info of the running process
-                                rescale=mm,  remove_minus_flag=rm, scale_ratio=1.5,
+                                rescale=mm,  remove_minus_flag=rm, scale_ratio=1.0,
                                 feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
                                 randomization=None,  # model randomization for sanity check
                                 use_pred=use_pred,
