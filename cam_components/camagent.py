@@ -97,6 +97,19 @@ class CAMAgent():
             self.fsr = None
         self.use_pred = use_pred  # whether improve the effficiency through use the prediction only, assert the existence of the cateNone file
 
+        # ------------------------------------------------------- cam core open ------------------------------------------------------- #
+        self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        cuda_flag = True if self.device=='cuda' else False
+        self.camoperator = self.cam_method(model=model,
+                                 target_layers=self.target_layer,
+                                 ram=self.ram,
+                                 use_cuda=cuda_flag,
+                                 groups=self.groups, # if use group conv, need to seperate them
+                                 importance_matrix=None,  # overwrite when using creator, initialize to avoid passing attributes
+                                 out_logit=False,  # overwrite when using creator, initialize to avoid passing attributes
+                                 )
+        # ------------------------------------------------------- cam core open ------------------------------------------------------- #
+
         # ------------------------------------------------------- get path in dict ------------------------------------------------------- #
         self.im_path = {}
         self.cam_dir = {}
@@ -123,20 +136,15 @@ class CAMAgent():
         # ------------------------------------------------------- get rescaler ------------------------------------------------------- #
         if (self.rescale) and (rescaler is None):
             # without outer input
-            try:  # try getting info from saved files
-                if not isinstance(select_category, list):
-                    select_category = [select_category]
-                for tc in select_category:
-                    im_path = self.im_path[str(tc)]
-                    self.im[str(tc)], self.value_max[str(tc)], self.value_min[str(tc)] = self._get_importances(im_path, tc)
-            except:
-                print('calculate the common scale and importance matrix')
-                self._analyzer_main()
-                if not isinstance(select_category, list):
-                    select_category = [select_category]
-                for tc in select_category:
-                    im_path = self.im_path[str(tc)]
-                    self.im[str(tc)], self.value_max[str(tc)], self.value_min[str(tc)] = self._get_importances(im_path, tc)
+            if not isinstance(select_category, list):
+                select_category = [select_category]
+            for tc in select_category:
+                im_path = self.im_path[str(tc)]
+                if not os.path.exists(im_path):
+                    print('calculate the common scale and importance matrix')
+                    self._analyzer_main()
+            for tc in select_category:
+                self.im[str(tc)], self.value_max[str(tc)], self.value_min[str(tc)] = self._get_importances(im_path, tc)
 
             self.rescaler = {}
             if 'multi' in self.rescale:
@@ -152,45 +160,26 @@ class CAMAgent():
         else:
             self.rescaler['uniform'] = Rescaler(value_max=None, value_min=None, remove_minus_flag=self.rm, rescale_func='norm')
         # ------------------------------------------------------- get rescaler ------------------------------------------------------- #
-        
         # ------------------------------------------------------- get im masks ------------------------------------------------------- #
         # if self.im doesn't exist
         if len(self.im.keys)==0 and (self.fs!='all'):
-            try:
-                if not isinstance(select_category, list):
+            if not isinstance(select_category, list):
                     select_category = [select_category]
-                for tc in select_category:
-                    im_path = self.im_path[str(tc)]
-                    self.im[str(tc)], _, _ = self._get_importances(im_path, tc)
-            except:
-                self._analyzer_main()
-                if not isinstance(select_category, list):
-                    select_category = [select_category]
-                for tc in select_category:
-                    im_path = self.im_path[str(tc)]
-                    self.im[str(tc)], _, _ = self._get_importances(im_path, tc)
+            for tc in select_category:
+                im_path = self.im_path[str(tc)]
+                if not os.path.isfile(im_path):
+                    self._analyzer_main()
+            for tc in select_category:
+                self.im[str(tc)], _, _ = self._get_importances(im_path, tc)
         else:
             self.im['uniform'] == None
+            self.im['None'] == None
         # ------------------------------------------------------- get im masks ------------------------------------------------------- #
 
         # ------------------------------------------------------- call artists ------------------------------------------------------- #
         assert cam_type in ['1D', '2D', '3D', None]
         self.artist = Artists(cam_dir=self.cam_dir, cam_type=cam_type, groups=self.groups, backup=True)
         # ------------------------------------------------------- call artists ------------------------------------------------------- #
-        # early stop是一个create过程的参数，不应该放在init里
-
-        # ------------------------------------------------------- cam core open ------------------------------------------------------- #
-        self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        cuda_flag = True if self.device=='cuda' else False
-        self.camoperator = self.cam_method(model=model,
-                                 target_layers=self.target_layer,
-                                 ram=self.ram,
-                                 use_cuda=cuda_flag,
-                                 groups=self.groups, # if use group conv, need to seperate them
-                                 importance_matrix=None,  # overwrite when using creator, initialize to avoid passing attributes
-                                 out_logit=False,  # overwrite when using creator, initialize to avoid passing attributes
-                                 )
-        # ------------------------------------------------------- cam core open ------------------------------------------------------- #
         print(f'------------------------------ initialized ------------------------------')
 
 
@@ -251,8 +240,8 @@ class CAMAgent():
         model = self.model.to(device=device)
         model.eval()
         
-
-        for x,y in self.dataset:
+        dataset = tqdm(self.dataset) if platform.system().lower()=='windows' else self.dataset
+        for x,y in dataset:
             x = x.to(dtype=torch.float32).to(device)
             y = y.to(dtype=torch.float32).to(device)
             

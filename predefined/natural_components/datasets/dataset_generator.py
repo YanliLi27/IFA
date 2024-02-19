@@ -9,15 +9,15 @@ def transform_generator(model_flag:str='vgg', task_flag:str='CatsDogs', phase:st
         transform_list.append(transforms.Normalize([0.5], [0.5]))
     else:
         if model_flag=='vgg' or model_flag=='resnet':
-            transform_list.append(transforms.Resize((256, 256)))
+            transform_list.append(transforms.Resize((256, 256), antialias=True))
         else:
-            transform_list.append(transforms.Resize((224, 224)))
+            transform_list.append(transforms.Resize((224, 224), antialias=True))
         
         if phase=='val' or phase=='test':
             transform_list.append(transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]))
             
         else:
-            transform_list.append(transforms.RandomCrop(224))
+            transform_list.append(transforms.RandomCrop(224), antialias=True)
             transform_list.append(transforms.ColorJitter())
             transform_list.append(transforms.RandomHorizontalFlip())
             transform_list.append(transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]))

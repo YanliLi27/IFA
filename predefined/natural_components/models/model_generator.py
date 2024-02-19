@@ -9,17 +9,17 @@ import torch
 def model_zoo(model_flag:str='vgg', in_channel:int=3, num_classes:int=2, task_flag:str='CatsDogs'):
     if model_flag=='vgg':
         if task_flag=='Imagenet' or task_flag=='ClickMe':
-            model_vgg = torchvision.models.vgg16(pretrained=True)
+            model_vgg = torchvision.models.vgg16(weights=torchvision.models.VGG16_Weights.DEFAULT)
         else:
-            model_vgg = torchvision.models.vgg11(pretrained=True)
+            model_vgg = torchvision.models.vgg11(weights=torchvision.models.VGG11_Weights.DEFAULT)
             fc_features = model_vgg.classifier[6].in_features
             model_vgg.classifier[6] = nn.Linear(fc_features, num_classes)
         model = model_vgg
     elif model_flag=='resnet':
         if task_flag=='Imagenet':
-            model_res = torchvision.models.resnet18(pretrained=True)
+            model_res = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
         else:
-            model_res = torchvision.models.resnet18(pretrained=True)
+            model_res = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.DEFAULT)
             fc_features = model_res.fc.in_features
             model_res.fc = nn.Linear(fc_features, num_classes)
         model = model_res

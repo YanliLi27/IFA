@@ -60,7 +60,7 @@ class EvalAgent():
 
     def blockeval(self, tc, grayscale_cam:np.array, predict_category, pred_score, nega_score, 
                   x:torch.Tensor, y:torch.Tensor, model:nn.Module,
-                  device:torch.device("cuda" if torch.cuda.is_available() else "cpu")):
+                  device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
         # choose from one: cam_regularizer or cam_regularizer_binary
         grayscale_cam = cam_regularizer(np.array(grayscale_cam)) # -- [16, 1, 256, 256]
         # grayscale_cam = cam_regularizer_binary(np.array(grayscale_cam)) # -- [16, 1, 256, 256]

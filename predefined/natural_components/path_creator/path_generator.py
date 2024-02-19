@@ -40,8 +40,8 @@ def path_generator(model_flag:str='resnet',
                    task:str='CatsDogs', dataset_split:str='val'):
     weights_path = weights_path_creator(model_flag, task)  # absolute path of the weights file
 
-    im_path = im_path_creator(model_flag, task, dataset_split)
+    # im_path = im_path_creator(model_flag, task, dataset_split)
 
-    cam_dir = cam_dir_creator(model_flag, task, dataset_split)
+    # cam_dir = cam_dir_creator(model_flag, task, dataset_split)
 
-    return weights_path, im_path, cam_dir
+    return weights_path, None, None
