@@ -106,12 +106,12 @@ class CAMAgent():
             for sc in select_category:
                 self.im_path[str(sc)], self.cam_dir[str(sc)], self.record_dir[str(sc)] = namefinder(name_str, sc, cam_method, 
                                                                                                     rescale, remove_minus_flag, 
-                                                                                                    feature_selection, feature_selection_ratio)
+                                                                                                    feature_selection, fsr=feature_selection_ratio)
         else:
             sc = select_category
             self.im_path[str(sc)], self.cam_dir[str(sc)], self.record_dir[str(sc)] = namefinder(name_str, sc, cam_method, 
                                                                                                 rescale, remove_minus_flag, 
-                                                                                                feature_selection, feature_selection_ratio)
+                                                                                                feature_selection, fsr=feature_selection_ratio)
             # self.im_path['1'] = ./output/name_str/im/All_cate_method.csv
             # self.cam_dir['1'] = ./output/name_str/cam/cate_method/scale_rm_feature/      os.path.basename(input_name)
             # self.record_dir['1'] = ./output/name_str/metric/_cate_method/scale_rm_feature/      name
@@ -212,7 +212,7 @@ class CAMAgent():
     def _analyzer_main(self, confidence_weight_flag:bool=False):
         if isinstance(self.select_category, list):
             for tc in self.select_category:
-                im_path = self.im_path[tc]
+                im_path = self.im_path[str(tc)]
                 print('im_path: {}'.format(im_path))
                 if not os.path.isfile(im_path):  # only when the file dosen't exist -- because some loop would be repeated in experiments
                     print(f'--------- creating IMs for target {tc} ---------')
@@ -222,7 +222,7 @@ class CAMAgent():
                     im_save(im_overall, im_target, im_diff, cam_grad_max_matrix, cam_grad_min_matrix,
                             im_path)
         else:
-            im_path = self.im_path[self.select_category]
+            im_path = self.im_path[str(self.select_category)]
             print('im_path: {}'.format(im_path))
             if not os.path.isfile(im_path):  # only when the file dosen't exist -- because some loop would be repeated in experiments
                 if self.select_category == None or self.select_category=='GT':
@@ -371,7 +371,7 @@ class CAMAgent():
             tc_truth = []
 
             for tc in creator_tc:
-                rescaler = self.rescaler['uniform'] if (self.rescale=='multi' or self.rescale==None) else self.rescaler[str(tc)]
+                rescaler = self.rescaler['uniform'] if (self.rescale=='multi') else self.rescaler[str(tc)]
                 grayscale_cam, predict_category, pred_score, nega_score\
                     = self.camoperator(input_tensor=x, target_category=tc, gt=y, ifaoperation=False, 
                                         im=self.im[str(tc)], out_logit=logit_flag, rescaler=rescaler)
@@ -488,7 +488,7 @@ class CAMAgent():
         x = x.to(dtype=torch.float32).to(device)   # [batch, groups/channels, (D), L, W]
         tc_cam = []  # 仅用于需要合并不同类cam的情况下使用
         for tc in creator_tc:
-            rescaler = self.rescaler['uniform'] if (self.rescale=='multi' or self.rescale==None) else self.rescaler[str(tc)]
+            rescaler = self.rescaler['uniform'] if (self.rescale=='multi') else self.rescaler[str(tc)]
             grayscale_cam, _, _, _\
                 = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
                                     im=self.im[str(tc)], out_logit=False, rescaler=rescaler)

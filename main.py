@@ -6,7 +6,7 @@ if __name__ == '__main__':
     # for natural images test 
     task_zoo = ['CatsDogs'] #'MNIST', 'Imagenet','CatsDogs'] 
     model_zoo = {'CatsDogs':'vgg', 'Imagenet':'vgg', 'MNIST':'scratch_mnist'}
-    tc_zoo = {'CatsDogs':[0, 1], 'Imagenet':[10,11,12,13], 'MNIST':[0,1,2,3,4,5,6,7,8,9]}
+    tc_zoo = {'CatsDogs':[1], 'Imagenet':[10,11,12,13], 'MNIST':[0,1,2,3,4,5,6,7,8,9]}
 
     for task in task_zoo:
         if task!='Imagenet':
@@ -23,7 +23,7 @@ if __name__ == '__main__':
             naturalimage_runner(target_category=None, model_flag=model, task=task, dataset_split='val',
                                 max_iter=None, randomization=False, random_severity=0,
                                 eval_flag='basic', tan_flag=tan_flag, cam_method=cam_method_zoo,
-                                cam_save=False)
+                                cam_save=True)
             # for tc_s in tc:
             #     naturalimage_runner(target_category=tc_s, model_flag=model, task=task, dataset_split='val',
             #                         max_iter=None, randomization=False, random_severity=0,
