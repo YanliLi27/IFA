@@ -23,16 +23,16 @@ class CAMAgent():
                 # ---------------- model and dataset -------------#
                 cam_method:str='gradcam', 
                 name_str:str='task_fold',  # output setting
-                batch_size:int=1, select_category:Union[None, str, int, list]=1,  # info of the running process
+                batch_size:int=1, select_category:Union[None, str, int, list]=None,  # info of the running process
                 # ---------------- cam setting -------------#
                 rescale:Literal['norm', 'tanh', 'norm_multi', 'tanh_multi', None, False]='norm', 
-                remove_minus_flag:bool=False, scale_ratio:float=1.5,  # rescaler
+                remove_minus_flag:bool=False, scale_ratio:float=1.,  # rescaler
                 feature_selection:Literal['reverse_diff_top', 'max', 'top', 'diff_top', 'freq', 'index', 'all']='all', 
-                feature_selection_ratio:Union[float, None]=None,  # feature selection
+                feature_selection_ratio:Union[float, None]=1.,  # feature selection
                 randomization:Union[None, float]=None,  # model randomization for sanity check
                 use_pred:bool=False,  # improve effeciency
                 rescaler=None,  # outer scaler
-                cam_type:Union[str, None]=None
+                cam_type:Literal['1D', '2D', '3D', None]='2D'  # cam output type
                 ) -> None:
        
         # agent 有如下部分组成：
@@ -91,10 +91,8 @@ class CAMAgent():
         self.rm = remove_minus_flag
         assert feature_selection in ['reverse_diff_top', 'max', 'top', 'diff_top', 'freq', 'index', 'all']
         self.fs = feature_selection
-        if self.fs:
-            self.fsr = feature_selection_ratio if isinstance(feature_selection_ratio, float) else 0.05
-        else:
-            self.fsr = None
+        self.fsr = feature_selection_ratio if isinstance(feature_selection_ratio, float) and self.fs else 1.0
+
         self.use_pred = use_pred  # whether improve the effficiency through use the prediction only, assert the existence of the cateNone file
 
         # ------------------------------------------------------- cam core open ------------------------------------------------------- #
@@ -481,7 +479,7 @@ class CAMAgent():
         creator_tc = creator_target_category if self.select_category==None else self.select_category
         if not isinstance(creator_tc, list):
             creator_tc = [creator_tc]
-        if not isinstance(cluster, None):
+        if cluster:
             if np.sum(np.asarray(cluster))!=len(np.asarray(creator_tc)):
                 raise AttributeError(f'the cluster number {np.sum(np.asarray(cluster))} given \
                                      doesnt match that of selected outputs {len(np.asarray(creator_tc))}')
@@ -505,11 +503,16 @@ class CAMAgent():
                                     im=im, out_logit=False, rescaler=rescaler)
             tc_cam.append(grayscale_cam)  # tc_cam: tc_len* batch* (target_layer_aggregated)_array[groups, (depth), length, width]
                 # tc_cam: [5(tc) * [16 * [1(groups), 256, 256]]] / [5(tc) * [16 * [1(groups), depth, 256, 256]]]
-        tc_cam = np.asarray(tc_cam)  # [tc, batch, groups, (D), L, W]
-        newindex = set([1, 2, 0].extend([i for i in range(3, len(tc_cam.shape)+1)]))
-        tc_cam = np.transpose(np.asarray(tc_cam), newindex)   # [batch, groups, tc, (D), L, W]
+        # [tc, batch, groups, (D), L, W]
+        tc_cam = np.asarray(tc_cam)
+        if len(tc_cam.shape)==6:
+            tc_cam = np.transpose(tc_cam, (1, 2, 0, 3, 4, 5))   # [batch, groups, tc, (D), L, W]
+        elif len(tc_cam.shape)==5:
+            tc_cam = np.transpose(tc_cam, (1, 2, 0, 3, 4)) # [batch, groups, tc, L, W]
+        elif len(tc_cam.shape)==4:
+            tc_cam = np.transpose(tc_cam, (1, 2, 0, 3))   # [batch, groups, tc, W]
         # [batch, groups, tc, (D), L, W]
-        if not isinstance(cluster, None) and (max(cluster)>1):  # width-prior, merge cams required
+        if cluster and (max(cluster)>1):  # width-prior, merge cams required
             camshape = tc_cam.shape
             camshape[2] = len(cluster)
             clustercam = np.zeros(camshape)
