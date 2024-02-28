@@ -466,7 +466,8 @@ class CAMAgent():
             
     def indiv_return(self, x:torch.Tensor,  # make sure the input is a 4-dimension tensor
                     creator_target_category:Union[None, str, int, list]='Default',
-                    cluster:Union[None, list[int], np.array]=None) -> np.array:  # [batch, (slice), L, W]
+                    cluster:Union[None, list[int], np.array]=None,
+                    pred_flag:bool=False) -> np.array:  # [batch, (slice), L, W]
         # use origin -- False
         # use eval -- False
         if creator_target_category=='Default':
@@ -498,7 +499,7 @@ class CAMAgent():
             else:
                 rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['uniform']
             im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
-            grayscale_cam, _, _, _\
+            grayscale_cam, pred_category, _, _\
                 = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
                                     im=im, out_logit=False, rescaler=rescaler)
             tc_cam.append(grayscale_cam)  # tc_cam: tc_len* batch* (target_layer_aggregated)_array[groups, (depth), length, width]
@@ -522,6 +523,6 @@ class CAMAgent():
                 cluster_counter+=cluster[i]
             tc_cam = clustercam  # [batch, groups/channels, cluster, (D), L, W]
         # [batch, groups, cluster, (D), L, W]
-        return tc_cam  # [batch, groups, cluster/tc, (D), L, W]
-        # [1, 1, cluster/tc, (D), L, W]
+        return tc_cam, pred_category if pred_flag else tc_cam  # [batch, groups, cluster/tc, (D), L, W]
+        # [1, 1, cluster/tc, (D), L, W], [batch, 1(label)]
             
