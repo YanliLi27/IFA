@@ -76,6 +76,8 @@ class Artists:
         origin = origin / (np.max(origin) +1e-7)
         if origin.shape[1] == 1:
             origin = np.repeat(origin, repeats=3, axis=1)  # [G, 1, L, W] -> [G, 3, L, W]
+        elif origin.shape[1]!=3:
+            origin = np.repeat(np.expand_dims(origin[:, origin.shape[1]//2, :], axis=1) , repeats=3, axis=1)
         origin = np.transpose(origin, axes=(0, 2, 3, 1))  # [G, L, W, 3]
         cam_image_group_list = []
         for j in range(self.groups):

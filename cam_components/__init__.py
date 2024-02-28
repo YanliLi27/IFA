@@ -1,1 +1,1 @@
-from camagent import CAMAgent
+from cam_components.camagent import CAMAgent

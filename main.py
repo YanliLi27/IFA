@@ -1,6 +1,6 @@
-from predefiend_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
-from reg_runner import ramris_pred_runner
-from indiv_runner import indiv_runner
+from runner.predefiend_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
+from runner.reg_runner import ramris_pred_runner
+from runner.indiv_runner import indiv_runner
 
 
 if __name__ == '__main__':
@@ -41,12 +41,12 @@ if __name__ == '__main__':
     #         medical_runner(target_category=None, task=task, dataset_split='val', cam_save=False, eval_flag='basic')
     #         # medical_runner(target_category=tc, task=task, dataset_split='val', cam_save=False, eval_flag='corr_logit')
 
-    # esmira_runner(target_category=None, data_dir='D:\\ESMIRA\\ESMIRA_common',
-    #               target_catename=['CSA','ATL'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=False, eval_flag='basic')
+    esmira_runner(target_category=None, data_dir='D:\\ESMIRA\\ESMIRA_common',
+                  target_catename=['CSA'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=True, eval_flag='basic')
     # tc_zoo = [0, 1]
     # for tc in tc_zoo:
     #     esmira_runner(target_category=tc, data_dir='D:\\ESMIRA\\ESMIRA_common',
-    #                   target_catename=['CSA','ATL'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=False, eval_flag='corr_logit')
+    #                   target_catename=['CSA'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=True, eval_flag='corr_logit')
 
     # ramris_pred_runner(data_dir='', target_category=['EAC'], 
     #              target_site=['Wrist'], target_dirc=['TRA', 'COR'],
@@ -82,20 +82,22 @@ if __name__ == '__main__':
 
 
     # for cam aggregation test
-    task_zoo = ['CatsDogs'] #'MNIST', 'Imagenet','CatsDogs'] 
-    model_zoo = {'CatsDogs':'vgg'}
-    tc_zoo = {'CatsDogs':[1]}
+    # task_zoo = ['CatsDogs'] #'MNIST', 'Imagenet','CatsDogs'] 
+    # model_zoo = {'CatsDogs':'vgg'}
+    # tc_zoo = {'CatsDogs':[1]}
 
-    for task in task_zoo:
-        model = model_zoo[task]
-        tc = tc_zoo[task]
-        cam_method_zoo = ['fullcam'] #, 'gradcam', 'gradcampp', 'xgradcam']
-        # indiv_runner(target_category=None, model_flag=model, task=task, dataset_split='val',
-        #                     max_iter=None, randomization=False, random_severity=0,
-        #                     eval_flag='basic', tan_flag=False, cam_method=cam_method_zoo,
-        #                     cam_save=True)
-        for tc_s in tc:
-            indiv_runner(target_category=tc_s, model_flag=model, task=task, dataset_split='val',
-                                max_iter=None, randomization=False, random_severity=0,
-                                eval_flag='corr_logit', tan_flag=False, cam_method=cam_method_zoo,
-                                cam_save=True)
+    # for task in task_zoo:
+    #     model = model_zoo[task]
+    #     tc = tc_zoo[task]
+    #     cam_method_zoo = ['fullcam'] #, 'gradcam', 'gradcampp', 'xgradcam']
+    #     # indiv_runner(target_category=None, model_flag=model, task=task, dataset_split='val',
+    #     #                     max_iter=None, randomization=False, random_severity=0,
+    #     #                     eval_flag='basic', tan_flag=False, cam_method=cam_method_zoo,
+    #     #                     cam_save=True)
+    #     for tc_s in tc:
+    #         indiv_runner(target_category=tc_s, model_flag=model, task=task, dataset_split='val',
+    #                             max_iter=None, randomization=False, random_severity=0,
+    #                             eval_flag='corr_logit', tan_flag=False, cam_method=cam_method_zoo,
+    #                             cam_save=True)
+
+
