@@ -330,7 +330,7 @@ class CAMAgent():
         if eval_act is not False:
             ea  = EvalAgent(save_path=self.record_dir, eval_act=eval_act, creator_tc=creator_tc, 
                             num_classes=self.num_classes, groups=self.groups)
-            logit_flag = True if ('logit' in eval_act) else False
+        logit_flag = True if ('logit' in eval_act) else False
         # self.im_path = {}  'str(tc)'=xxx, 'uniform'=xxx
         # self.cam_dir = {}
         # self.record_dir = {}
