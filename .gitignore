@@ -3,5 +3,8 @@
 /predefined/esmira_components/dataset/logs
 /predefined/ramris_components/generators/background
 /predefined/ramris_components/generators/scanner/logs
+/predefined/ramris_components/generators/scanner/recover
 /predefined/ramris_components/models/figs
 /predefined/ramris_components/models/weights
+/predefined/raclip_components/generators/scanner/logs
+/predefined/raclip_components/generators/scanner/recover

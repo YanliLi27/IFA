@@ -1,6 +1,7 @@
 from runner.predefiend_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
 from runner.reg_runner import ramris_pred_runner
 from runner.indiv_runner import indiv_runner
+from runner.ramris3d_runner import ramris3d_pred_runner
 
 
 if __name__ == '__main__':
@@ -41,8 +42,8 @@ if __name__ == '__main__':
     #         medical_runner(target_category=None, task=task, dataset_split='val', cam_save=False, eval_flag='basic')
     #         # medical_runner(target_category=tc, task=task, dataset_split='val', cam_save=False, eval_flag='corr_logit')
 
-    esmira_runner(target_category=None, data_dir='D:\\ESMIRA\\ESMIRA_common',
-                  target_catename=['CSA'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=True, eval_flag='basic')
+    # esmira_runner(target_category=None, data_dir='D:\\ESMIRA\\ESMIRA_common',
+    #               target_catename=['CSA'], target_site=['Wrist'], target_dirc=['TRA', 'COR'], cam_save=True, eval_flag='basic')
     # tc_zoo = [0, 1]
     # for tc in tc_zoo:
     #     esmira_runner(target_category=tc, data_dir='D:\\ESMIRA\\ESMIRA_common',
@@ -100,4 +101,4 @@ if __name__ == '__main__':
     #                             eval_flag='corr_logit', tan_flag=False, cam_method=cam_method_zoo,
     #                             cam_save=True)
 
-
+    ramris3d_pred_runner()
