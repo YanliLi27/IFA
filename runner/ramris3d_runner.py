@@ -34,6 +34,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
     from predefined.raclip_components.utils.output_finder import output_finder
     import torch
 
+    # TODO prepare for the dataloader for synthetic segmentation
     if target_biomarker:
         for item in target_biomarker:
             assert (item in ['ERO', 'BME', 'SYN', 'TSY'])
@@ -41,14 +42,6 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                                          target_reader, target_biomarker, task_mode, print_flag=True, maxfold=5, score_sum=score_sum)
 
     for fold_order in range(0, maxfold):
-        save_bio = target_biomarker[0] if len(target_biomarker)==1 else 'all'
-        save_site = target_site[0] if len(target_site)==1 else 'multiple'
-        save_father_dir = os.path.join('./models/figs', f'{data_dir[-4:]}_csv{model_csv}_{save_site}_{save_bio}_sumscore{score_sum}')
-        if not os.path.exists(save_father_dir):
-            os.makedirs(save_father_dir)
-        save_dir = os.path.join(save_father_dir, f'fold_{fold_order}')
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
         train_dataset, val_dataset = dataset_generator.returner(task_mode=task_mode, phase=phase, fold_order=fold_order,
                                                                 material='img', monai=True, full_img=full_img,
                                                                 dimension=dimension, data_balance=False,
