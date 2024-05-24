@@ -9,7 +9,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                         target_site=['Wrist'], target_dirc=['TRA', 'COR'],
                         target_biomarker=['SYN'],
                         target_reader=['Reader1', 'Reader2'], task_mode='clip', phase='train',
-                        full_img:bool=True, dimension:int=2,
+                        full_img:Union[bool, int]=True, dimension:int=2,
                         target_output:Union[None, int, str, list]=[0],
                         cluster:Union[None, list]=[15, 15, 3, 10],
                         tanh:bool=True,  
@@ -40,7 +40,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
     dataset_generator = ESMIRA_generator(data_dir, None, target_category, target_site, target_dirc, 
                                          target_reader, target_biomarker, task_mode, print_flag=True, maxfold=5, score_sum=score_sum)
 
-    for fold_order in range(0, 1):
+    for fold_order in range(0, maxfold):
         save_bio = target_biomarker[0] if len(target_biomarker)==1 else 'all'
         save_site = target_site[0] if len(target_site)==1 else 'multiple'
         save_father_dir = os.path.join('./models/figs', f'{data_dir[-4:]}_csv{model_csv}_{save_site}_{save_bio}_sumscore{score_sum}')
@@ -104,8 +104,8 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
 
 
         weight_path = output_finder(target_biomarker, target_site, target_dirc, None, fold_order, sumscore=score_sum)
-        # TODO update the path
-        mid_path = 'ALLBIO' if (target_biomarker is None or len(target_biomarker)>1) else f'ALL{target_biomarker[0]}'
+        weight_path = weight_path.replace('./models/weights/', '')
+        mid_path = 'un22_csv3d_sumscore_splitsites_20240514'
         weight_abs_path = os.path.join(f'D:\\ESMIRAcode\\RA_CLIP\\models\\weights\\{mid_path}', weight_path)
         if os.path.isfile(weight_abs_path):
             checkpoint = torch.load(weight_abs_path)
@@ -142,4 +142,4 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                                 cam_type='3D'  # output 2D or 3D
                                 )
                         Agent.creator_main(cr_dataset=None, creator_target_category=target_output, eval_act='corr', cam_save=True,
-                                    cluster=None, use_origin=False, max_iter=max_iter)
+                                    cluster=cluster, use_origin=False, max_iter=max_iter)
