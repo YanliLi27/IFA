@@ -1,10 +1,10 @@
 import os
-from generators.init_utils.dataset_scanner import ESMIRA_scanner
-from generators.init_utils.input_filter import input_filter
-from generators.init_utils.split_generator import class_generator, split_generator, split_definer, balancer, val_split_definer
-from generators.init_utils.central_slice import central_slice_generator
-from generators.init_utils.split_saver import split_saver
-from dataset.datasets import ESMIRADataset2D
+from predefined.raclass_components.generators.init_utils.dataset_scanner import ESMIRA_scanner
+from predefined.raclass_components.generators.init_utils.input_filter import input_filter
+from predefined.raclass_components.generators.init_utils.split_generator import class_generator, split_generator, split_definer, balancer, val_split_definer
+from predefined.raclass_components.generators.init_utils.central_slice import central_slice_generator
+from predefined.raclass_components.generators.init_utils.split_saver import split_saver
+from predefined.raclass_components.dataset.datasets import ESMIRADataset2D
 from torch.utils.data import Dataset
 from typing import Union, Tuple
 # from torchvision import transforms

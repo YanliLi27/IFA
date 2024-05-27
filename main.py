@@ -1,8 +1,7 @@
 from runner.predefiend_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
 from runner.reg_runner import ramris_pred_runner
 from runner.indiv_runner import indiv_runner
-from runner.ramris3d_runner import ramris3d_pred_runner
-import platform
+
 
 
 if __name__ == '__main__':
@@ -84,41 +83,20 @@ if __name__ == '__main__':
 
 
     # for cam aggregation test
-    # task_zoo = ['CatsDogs'] #'MNIST', 'Imagenet','CatsDogs'] 
-    # model_zoo = {'CatsDogs':'vgg'}
-    # tc_zoo = {'CatsDogs':[1]}
+    task_zoo = ['CatsDogs'] #'MNIST', 'Imagenet','CatsDogs'] 
+    model_zoo = {'CatsDogs':'vgg'}
+    tc_zoo = {'CatsDogs':[1]}
 
-    # for task in task_zoo:
-    #     model = model_zoo[task]
-    #     tc = tc_zoo[task]
-    #     cam_method_zoo = ['fullcam'] #, 'gradcam', 'gradcampp', 'xgradcam']
-    #     # indiv_runner(target_category=None, model_flag=model, task=task, dataset_split='val',
-    #     #                     max_iter=None, randomization=False, random_severity=0,
-    #     #                     eval_flag='basic', tan_flag=False, cam_method=cam_method_zoo,
-    #     #                     cam_save=True)
-    #     for tc_s in tc:
-    #         indiv_runner(target_category=tc_s, model_flag=model, task=task, dataset_split='val',
-    #                             max_iter=None, randomization=False, random_severity=0,
-    #                             eval_flag='corr_logit', tan_flag=False, cam_method=cam_method_zoo,
-    #                             cam_save=True)
-    data_dir = 'E:\\ESMIRA_RAprediction\\Export20Jun22' if platform.system().lower()=='windows' else '/exports/lkeb-hpc/yanli/Export20Jun22'
-    score_sum = True
-    dim = 3
-    model_csv = True
-    biomakrer_zoo = [['SYN', 'TSY', 'BME']] # 'SYN', 'TSY', 'BME',  ['SYN', 'TSY', 'BME'] #['TSY']#['SYN'], ['TSY'], ['BME']] #  , 
-    site_zoo = [['Wrist'], ['MCP'], ['Foot']]  #  , ['Wrist', 'MCP', 'Foot']]#,
-    drc_zoo = [{'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'COR', 'TSY':'COR', 'BME':'TRA'}]
-    for n, site in enumerate(site_zoo):
-        for bio in biomakrer_zoo:
-            # if n<1 and isinstance(bio, str) and bio in ['SYN', 'TSY']:
-            #     print('======================================================1=======================================================')
-            #     continue
-                ramris3d_pred_runner(data_dir=data_dir, target_category=None, target_site=site, target_dirc=['TRA', 'COR'], 
-                                    target_biomarker=bio, target_reader=['Reader1', 'Reader2'],
-                                    task_mode='clip', phase='train',
-                                    full_img=7, dimension=3, 
-                                    target_output=[0],
-                                    cluster=None,
-                                    tanh=False,  
-                                    model_csv=model_csv, extension=0,
-                                    score_sum=True, maxfold=1)
+    for task in task_zoo:
+        model = model_zoo[task]
+        tc = tc_zoo[task]
+        cam_method_zoo = ['fullcam'] #, 'gradcam', 'gradcampp', 'xgradcam']
+        # indiv_runner(target_category=None, model_flag=model, task=task, dataset_split='val',
+        #                     max_iter=None, randomization=False, random_severity=0,
+        #                     eval_flag='basic', tan_flag=False, cam_method=cam_method_zoo,
+        #                     cam_save=True)
+        for tc_s in tc:
+            indiv_runner(target_category=tc_s, model_flag=model, task=task, dataset_split='val',
+                                max_iter=None, randomization=False, random_severity=0,
+                                eval_flag='corr_logit', tan_flag=False, cam_method=cam_method_zoo,
+                                cam_save=True)

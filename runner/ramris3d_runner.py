@@ -126,7 +126,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                                 groups, ram,
                                 # optional:
                                 cam_method=method, name_str=f'esmira_{fold_order}',# cam method and im paths and cam output
-                                batch_size=batch_size, select_category=target_category,  # info of the running process
+                                batch_size=batch_size, select_category=0,  # info of the running process
                                 rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
                                 feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
                                 randomization=None,  # model randomization for sanity check

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from models.csv_utils import Transformer
+from predefined.raclass_components.models.csv_utils import Transformer
 # ViTBlock: simplified ViT block, merging channel and dim
 # dim:(channels of input), 
 # depth:(num of transformer block)[2,4,3],
