@@ -5,13 +5,11 @@ import os
 # from torchsummary import summary
 
 
-def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list]=None, 
+def ramris3d_pred_runner(target_category:Union[None, int, str, list]=None, 
                         target_site=['Wrist'], target_dirc=['TRA', 'COR'],
                         target_biomarker=['SYN'],
-                        target_reader=['Reader1', 'Reader2'], task_mode='clip', phase='train',
                         full_img:Union[bool, int]=True, dimension:int=2,
                         target_output:Union[None, int, str, list]=[0],
-                        cluster:Union[None, list]=[15, 15, 3, 10],
                         tanh:bool=True,  
                         model_csv:bool=False, extension:int=0, score_sum:bool=False,
                         maxfold:int=5):
@@ -20,33 +18,26 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
     target_category:Union[None, int, str, list]=target_category  # info of the running process
     # more functions
     im_selection_extra:float=0.05  # importance matrices attributes
-    max_iter=None  # early stop
     groups:int=len(target_dirc) * len(target_site)
     ram:bool=True  # if it's a regression task
     use_pred:bool=False
     # -------------------------------- optional end -------------------------------- #
 
     # information needed:
+    from predefined.synaug_components.generators.rdrive_generator import Synaug_generator
     from predefined.raclip_components.models.clip_model import ModelClip
     from predefined.raclip_components.models.csv3d import make_csv3dmodel
     from predefined.raclip_components.models.convsharevit import make_csvmodel
-    from predefined.raclip_components.generators.utli_generator import ESMIRA_generator
     from predefined.raclip_components.utils.output_finder import output_finder
     import torch
 
-    # TODO prepare for the dataloader for synthetic segmentation
+
     if target_biomarker:
         for item in target_biomarker:
             assert (item in ['ERO', 'BME', 'SYN', 'TSY'])
-    dataset_generator = ESMIRA_generator(data_dir, None, target_category, target_site, target_dirc, 
-                                         target_reader, target_biomarker, task_mode, print_flag=True, maxfold=5, score_sum=score_sum)
-
+    dataset_generator = Synaug_generator(maxfold=5, score_sum=False)
     for fold_order in range(0, maxfold):
-        train_dataset, val_dataset = dataset_generator.returner(task_mode=task_mode, phase=phase, fold_order=fold_order,
-                                                                material='img', monai=True, full_img=full_img,
-                                                                dimension=dimension, data_balance=False,
-                                                                path_flag=False)
-        
+        _, val_dataset = dataset_generator.returner(train_flag=False, fold_order=fold_order)
         dataset = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False,
             num_workers=4, pin_memory=True)
         # input: [N*5, 512, 512] + int(label)
@@ -59,10 +50,11 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
         else:
             depth = 5
         group_num = len(target_site) * len(target_dirc)   # input is a (5*site*dirc) * 512 * 512 img
-        out_ch = 0
+
         if score_sum:
             out_ch = 1
         else:
+            out_ch = 0
             output_matrix = [[15, 15, 3, 10],[8, 8, 4, 8],[10, 10, 5, 10]]
             site_order = {'Wrist':0, 'MCP':1, 'Foot':2}
             bio_order = {'ERO':0, 'BME':1, 'SYN':2, 'TSY':3}
@@ -121,16 +113,25 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                         else:
                             mm = 'norm'
                         Agent = CAMAgent(model, target_layer, dataset,  
-                                groups, ram,
-                                # optional:
-                                cam_method=method, name_str=f'esmira_{fold_order}',# cam method and im paths and cam output
-                                batch_size=batch_size, select_category=0,  # info of the running process
-                                rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
-                                feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
-                                randomization=None,  # model randomization for sanity check
-                                use_pred=use_pred,
-                                rescaler=None,  # outer scaler
-                                cam_type='3D'  # output 2D or 3D
-                                )
-                        Agent.creator_main(cr_dataset=None, creator_target_category=target_output, eval_act='corr', cam_save=True,
-                                    cluster=cluster, use_origin=False, max_iter=max_iter)
+                                        groups, ram,
+                                        # optional:
+                                        cam_method=method, name_str=f'synaug4ramris_{fold_order}',# cam method and im paths and cam output
+                                        batch_size=batch_size, select_category=target_output,  # info of the running process
+                                        rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
+                                        feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
+                                        randomization=None,  # model randomization for sanity check
+                                        use_pred=use_pred,
+                                        rescaler=None,  # outer scaler
+                                        cam_type='3D'  # output 2D or 3D
+                                        )
+                        device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                        for x,x2,y in dataset:
+                            x = x.to(dtype=torch.float32).to(device)
+                            x2 = x2.to(dtype=torch.float32).to(device)
+
+                            indiv_cam = Agent.indiv_return(x, target_output, None)
+                            indiv_cam2 = Agent.indiv_return(x2, target_output, None)
+                            print(indiv_cam.shape)
+                            print(indiv_cam2.shape)
+                            # [batch, groups, cluster/tc, (D), L, W]
+                            print('1')

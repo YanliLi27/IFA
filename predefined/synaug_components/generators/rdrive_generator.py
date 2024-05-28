@@ -63,7 +63,11 @@ class Synaug_generator:
     def returner(self, train_flag:bool=False, fold_order:int=0):
         if train_flag:
             traindata, valdata = self._split_definer(self.datalist, fold_order)
-
+            traindataset = SynaugReg(traindata, None, False, True, cleanup=False)
+            valdataset = SynaugReg(valdata, None, False, True, cleanup=False)
         else:
             valdata = self._val_split_definer(self.datalist)
-        transforms = []
+            valdataset = SynaugReg(valdata, None, False, True, cleanup=False)
+            traindataset = None
+        return traindataset, valdataset
+        
