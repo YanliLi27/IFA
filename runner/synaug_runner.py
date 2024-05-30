@@ -5,7 +5,7 @@ import os
 # from torchsummary import summary
 
 
-def ramris3d_pred_runner(target_category:Union[None, int, str, list]=None, 
+def synaug_pred_runner(target_category:Union[None, int, str, list]=None, 
                         target_site=['Wrist'], target_dirc=['TRA', 'COR'],
                         target_biomarker=['SYN'],
                         full_img:Union[bool, int]=True, dimension:int=2,

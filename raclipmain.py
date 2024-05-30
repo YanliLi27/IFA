@@ -1,4 +1,5 @@
 from runner.ramris3d_runner import ramris3d_pred_runner
+from runner.synaug_runner import synaug_pred_runner
 import platform
 
 
@@ -24,3 +25,12 @@ if __name__ == '__main__':
                                 tanh=False,  
                                 model_csv=model_csv, extension=0,
                                 score_sum=True, maxfold=1)
+            
+    # synaug
+    synaug_pred_runner(target_category=None, target_site=['Wrist'], target_dirc=['TRA', 'COR'],
+                        target_biomarker=['SYN'],
+                        full_img=7, dimension=3,
+                        target_output=[0],
+                        tanh=True,  
+                        model_csv=True, extension=0, 
+                        score_sum=False, maxfold=5)
