@@ -32,7 +32,8 @@ class CAMAgent():
                 randomization:Union[None, float]=None,  # model randomization for sanity check
                 use_pred:bool=False,  # improve effeciency
                 rescaler=None,  # outer scaler
-                cam_type:Literal['1D', '2D', '3D', None]='2D'  # cam output type
+                cam_type:Literal['1D', '2D', '3D', None]='2D',  # cam output type
+                reshape_transform=None
                 ) -> None:
        
         # agent 有如下部分组成：
@@ -102,6 +103,7 @@ class CAMAgent():
                                  target_layers=self.target_layer,
                                  ram=self.ram,
                                  use_cuda=cuda_flag,
+                                 reshape_transform=reshape_transform,
                                  groups=self.groups, # if use group conv, need to seperate them
                                  importance_matrix=None,  # overwrite when using creator, initialize to avoid passing attributes
                                  out_logit=False,  # overwrite when using creator, initialize to avoid passing attributes
