@@ -1,4 +1,4 @@
-from runner.predefiend_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
+from runner.predefined_runner import naturalimage_runner, catsdog3d_runner, esmira_runner, medical_runner
 from runner.reg_runner import ramris_pred_runner
 from runner.indiv_runner import indiv_runner
 

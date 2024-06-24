@@ -7,21 +7,24 @@ import os
 import torch
 
 
-def kits_runner(num_samples:int=10000, tanh:bool=True):
+def kits_runner(num_samples:int=10000, tanh:bool=True, weight_abs_path=None, model_name:str='csv'):
     trainset, valset = kits_intialization(datacsv=f'./dataprepare/kits/splitdatapath_{num_samples}.npy')
     # traindataset = KitsDataset(stacked_list=trainset, transform=None, val_flag=False, repeat=1, maskout=False)
     valdataset = KitsDataset(stacked_list=valset, transform=None, val_flag=True, repeat=1, maskout=False)
     dataset = DataLoader(dataset=valdataset, batch_size=1, shuffle=False,
             num_workers=4, pin_memory=True)
 
-    model = make_csvmodel(img_2dsize=(512, 512), inch=1, num_classes=2, num_features=50, extension=50, 
-                  groups=1, width=1, dsconv=False, attn_type='normal', patch_size=(2,2), 
-                  mode_feature=False, dropout=True, init=False)
-    target_layer = [model.features[-1]]
-    # model = ModelClass(img_ch=1, group_num=1, num_classes=n_classes, classifier=Classifier)
-    # target_layer = [model.encoder_class.Conv4]
-
-    weight_abs_path:str = r'D:\ESMIRAcode\ACAM\model\logs\bestmodelkits.model'
+    weight_abs_path:str = r'D:\ESMIRAcode\ACAM\model\logs\bestmodelkits.model' if weight_abs_path==None else weight_abs_path
+    
+    if model_name=='csv':
+        model = make_csvmodel(img_2dsize=(512, 512), inch=1, num_classes=2, num_features=50, extension=50, 
+                    groups=1, width=1, dsconv=False, attn_type='normal', patch_size=(2,2), 
+                    mode_feature=False, dropout=True, init=False)
+        target_layer = [model.features[-1]]
+    else:
+        model = ModelClass(img_ch=1, group_num=1, num_classes=2, classifier=Classifier)
+        target_layer = [model.encoder_class.Conv4]
+    
     if os.path.isfile(weight_abs_path):
             checkpoint = torch.load(weight_abs_path)
             model.load_state_dict(checkpoint)

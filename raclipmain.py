@@ -26,11 +26,11 @@ if __name__ == '__main__':
                                 model_csv=model_csv, extension=0,
                                 score_sum=True, maxfold=1)
             
-    # synaug
+    # synaug -- for denis' augmentation
     synaug_pred_runner(target_category=None, target_site=['Wrist'], target_dirc=['TRA', 'COR'],
-                        target_biomarker=['SYN'],
+                        target_biomarker=['TSY'],
                         full_img=7, dimension=3,
                         target_output=[0],
                         tanh=True,  
                         model_csv=True, extension=0, 
-                        score_sum=False, maxfold=5)
+                        score_sum=False, maxfold=1)
