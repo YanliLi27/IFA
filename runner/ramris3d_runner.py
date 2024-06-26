@@ -40,7 +40,8 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
         for item in target_biomarker:
             assert (item in ['ERO', 'BME', 'SYN', 'TSY'])
     dataset_generator = ESMIRA_generator(data_dir, None, target_category, target_site, target_dirc, 
-                                         target_reader, target_biomarker, task_mode, print_flag=True, maxfold=5, score_sum=score_sum)
+                                         target_reader, target_biomarker, task_mode, working_dir=r'D:\ESMIRAcode\RA_CLIP', 
+                                         print_flag=True, maxfold=5, score_sum=score_sum)
 
     for fold_order in range(0, maxfold):
         train_dataset, val_dataset = dataset_generator.returner(task_mode=task_mode, phase=phase, fold_order=fold_order,

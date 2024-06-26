@@ -76,7 +76,7 @@ class ESMIRA_generator:
                 self.common_dict = pickle.load(tf)
                 print(f'found save ids in: {self.default_id_path}')
         else:
-            self.common_dict = img_id_scanner(self.data_root)
+            self.common_dict = img_id_scanner(self.data_root, working_dir=working_dir)
             if not ramris_root:
                 ramris_root = 'D:\\ESMIRA\\SPSS data' if platform.system().lower()=='windows' else '/exports/lkeb-hpc/yanli/SPSS data'
             self.common_dict = ramris_id_filter(self.common_dict, ramris_root=ramris_root)  # find the common list of img and ramris

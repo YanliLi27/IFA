@@ -53,7 +53,7 @@ def _common_list_finder(init_dict:dict, working_dir:str='.', data_root:str='') -
     return common_list
 
 
-def img_id_scanner(data_root:str) ->dict:
+def img_id_scanner(data_root:str, working_dir:str='.') ->dict:
     target_category = ['EAC', 'CSA', 'ATL']
     target_site = ['Wrist', 'MCP', 'Foot']
     target_dirc = ['TRA', 'COR']
@@ -70,7 +70,7 @@ def img_id_scanner(data_root:str) ->dict:
                 print(f'-- {dict_key} id finished --')
     # init_dict{'EAC_Wrist_TRA':idlist, ...}
     # find the common list of sites:
-    common_list = _common_list_finder(init_dict, data_root=data_root)  # {'EAC':[LIST], 'CSA':[LIST], 'ATL':[LIST]}
+    common_list = _common_list_finder(init_dict, working_dir=working_dir, data_root=data_root)  # {'EAC':[LIST], 'CSA':[LIST], 'ATL':[LIST]}
     return common_list
 
 
