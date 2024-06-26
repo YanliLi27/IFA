@@ -8,9 +8,9 @@ if __name__ == '__main__':
     score_sum = True
     dim = 3
     model_csv = True
-    biomakrer_zoo = [['SYN', 'TSY', 'BME']] # 'SYN', 'TSY', 'BME',  ['SYN', 'TSY', 'BME'] #['TSY']#['SYN'], ['TSY'], ['BME']] #  , 
+    biomakrer_zoo = [['SYN'], ['TSY'], ['BME']] # 'SYN', 'TSY', 'BME',  ['SYN', 'TSY', 'BME'] #['TSY']#['SYN'], ['TSY'], ['BME']] #  , 
     site_zoo = [['Wrist'], ['MCP'], ['Foot']]  #  , ['Wrist', 'MCP', 'Foot']]#,
-    drc_zoo = [{'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'COR', 'TSY':'COR', 'BME':'TRA'}]
+    # drc_zoo = [{'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'COR', 'TSY':'COR', 'BME':'TRA'}]
     for n, site in enumerate(site_zoo):
         for bio in biomakrer_zoo:
             # if n<1 and isinstance(bio, str) and bio in ['SYN', 'TSY']:

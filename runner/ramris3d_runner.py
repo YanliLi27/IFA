@@ -17,7 +17,8 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                         maxfold:int=5):
     # -------------------------------- optional: -------------------------------- #
     batch_size:int=2
-    target_category:Union[None, int, str, list]=target_category  # info of the running process
+    # target_category:Union[None, int, str, list]=target_category  # info of the running process
+    target_output:Union[None, int, str, list]=target_output
     # more functions
     im_selection_extra:float=0.05  # importance matrices attributes
     max_iter=None  # early stop
