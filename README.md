@@ -2,8 +2,13 @@
 
 ## The code for "Integrated feature analysis for deep learning interpretation and class_activation_maps"
 
-## The CAMs for signal processing were also included, refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
+### The CAMs for signal processing were also included, 
+> refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
 
+### The CAMs for 3D multi-output, multi-cluster, multi-layer images were also included,
+> refering to "Automatic segmentation-free inflammation scoring in rheumatoid arthritis from MRI using deep learning", Y. Li, et. al.
+
+### Thanks
 > Thanks to https://github.com/frgfm/torch-cam and https://github.com/jacobgil/pytorch-grad-cam for their functions.
 
 > Currently, default test support for MNIST, ILSVRC2012, Cats&Dogs, and other four public medical datasets. ESMIRA (private data) is not supported as it includes the information of patients.
