@@ -21,15 +21,19 @@
 > indiv_cam = Agent.indiv_return(x, target_category, None)
 #### Step5: For feature analysis, you can find the matrices in './output/*namestr*/im'
 
-### 2. main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
+
+### 1. main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 > Find them in the ./runner.
 > In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 
-### 3. **Add more CAM methods, please see the /cam_components/methods/*cam.py**
+
+### 2. **Add more CAM methods, please see the /cam_components/methods/*cam.py**
 
 
-### 4. **Change the functions for importance matrices and evaluation, see /cam_components/metric/*.py**
+
+### 3. **Change the functions for importance matrices and evaluation, see /cam_components/metric/*.py**
 
 
-### 5. For the output, you can create a dir named output for collection, the default is ./output/*namestr*/im&cam&figs.
+
+### 4. For the output, you can create a dir named output for collection, the default is ./output/*namestr*/im&cam&figs.
 
