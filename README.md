@@ -14,18 +14,9 @@
 #### Step1: Copy the folder: cam_components into your project.
 #### Step2: from cam_components.camagent import CAMAgent
 #### Step3: Give the following information to the class, most of them are default.
-Agent = CAMAgent(model, target_layer, dataset,  
-                        groups, ram,
-                        # optional:
-                        cam_method=method, name_str=f'{task}_{fold_order}',# cam method and im paths and cam output
-                        batch_size=batch_size, select_category=target_category,  # info of the running process
-                        rescale='norm',  remove_minus_flag=False, scale_ratio=1,
-                        feature_selection='all', feature_selection_ratio=1.0,  # feature selection
-                        randomization=None,  # model randomization for sanity check
-                        use_pred=use_pred,
-                        rescaler=None,  # outer scaler
-                        cam_type=None  # output '2D' or '3D'
-                        )
+Agent = CAMAgent(model, target_layer, dataset, groups, ram, cam_method=method, name_str=f'{task}_{fold_order}',
+                        batch_size=batch_size, select_category=target_category, rescale='norm',  remove_minus_flag=True, scale_ratio=1,
+                        feature_selection='all', feature_selection_ratio=1.0, cam_type='2D')
 #### Step4: Input your data and get the rescaled CAMs.
 indiv_cam = Agent.indiv_return(x, target_category, None)
 #### Step5: For feature analysis, you can find the matrices in './output/*namestr*/im'
