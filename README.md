@@ -14,7 +14,7 @@
 #### Step1: Copy the folder: cam_components into your project.
 #### Step2: from cam_components.camagent import CAMAgent
 #### Step3: Give the following information to the class, most of them are default.
-> Agent = CAMAgent(model, target_layer, dataset, groups, ram, cam_method=method, name_str=f'{task}_{fold_order}',
+> Agent = CAMAgent(model, target_layer, dataset, groups, ram=False, cam_method=method, name_str=f'{task}_{fold_order}',
 >                         batch_size=batch_size, select_category=target_category, rescale='norm',  remove_minus_flag=True, scale_ratio=1,
 >                         feature_selection='all', feature_selection_ratio=1.0, cam_type='2D')
 #### Step4: Input your data and get the rescaled CAMs.
