@@ -10,10 +10,10 @@
 
 
 ## Use:
-0. **For simple use**
-### Step1: Copy the folder: cam_components into your project.
-### Step2: from cam_components.camagent import CAMAgent
-### Step3: Give the following information to the class, most of them are default.
+### 0. **For simple use** ###
+#### Step1: Copy the folder: cam_components into your project.
+#### Step2: from cam_components.camagent import CAMAgent
+#### Step3: Give the following information to the class, most of them are default.
 Agent = CAMAgent(model, target_layer, dataset,  
                         groups, ram,
                         # optional:
@@ -26,17 +26,15 @@ Agent = CAMAgent(model, target_layer, dataset,
                         rescaler=None,  # outer scaler
                         cam_type=None  # output '2D' or '3D'
                         )
-### Step4: Input your data and get the rescaled CAMs.
+#### Step4: Input your data and get the rescaled CAMs.
 indiv_cam = Agent.indiv_return(x, target_category, None)
-### Step5: For feature analysis, you can find the matrices in './output/namestr/im'
+#### Step5: For feature analysis, you can find the matrices in './output/*namestr*/im'
 
-2. main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
+### 2. main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 Find them in the ./runner.
+In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 
-3. In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
-
-
-4. **Add more CAM methods, please see the /cam_components/methods/*cam.py**
+### 3. **Add more CAM methods, please see the /cam_components/methods/*cam.py**
  
     > (1) \*cam.py is for the analyzer, \*cam_pred.py is for the CAM generation.
     
@@ -44,8 +42,8 @@ Find them in the ./runner.
     
     > (3) Highly recommend to avoid using score CAM and the variants, as they takes too much time. 
 
-5. **Change the functions for importance matrices and evaluation, see /cam_components/agent/*.py**
+### 4. **Change the functions for importance matrices and evaluation, see /cam_components/metric/*.py**
 
 
-6. For the output, you can create a dir named output for collection, the default is ./output/im&cam&figs.
+### 5. For the output, you can create a dir named output for collection, the default is ./output/*namestr*/im&cam&figs.
 
