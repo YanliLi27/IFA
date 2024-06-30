@@ -146,16 +146,16 @@ class Artists:
             if not (len(origin_shape)==5 and len(cam_shape)==4):
                 raise ValueError(f'shape of origin {origin_shape} and cam {cam_shape} doesnt meet the requirement of 3D output')
             for g in range(self.groups):
-                save_name = os.path.join(f'{name_str}_g{self.groups}.nii.gz')
+                save_name = os.path.join(f'{name_str}_g{g}.nii.gz')
                 writter = sitk.ImageFileWriter()
                 writter.SetFileName(save_name)
                 writter.Execute(sitk.GetImageFromArray(cam[g]))
 
-                origin_save_name = os.path.join(f'{name_str}_origin_g{self.groups}.nii.gz')
+                origin_save_name = os.path.join(f'{name_str}_origin_g{g}.nii.gz')
                 if not os.path.isfile(origin_save_name):
                     writter.SetFileName(origin_save_name)
                     # [batch, organ_groups, z, y, x, channel] to [batch, organ_groups, z, y, x]
-                    writter.Execute(sitk.GetImageFromArray(origin[g]))
+                    writter.Execute(sitk.GetImageFromArray(origin[g, 0]))
 
         elif self.cam_type == '1D':
             raise AttributeError('1D not supported yet')
