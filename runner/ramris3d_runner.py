@@ -98,7 +98,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
 
         weight_path = output_finder(target_biomarker, target_site, target_dirc, None, fold_order, sumscore=score_sum)
         weight_path = weight_path.replace('./models/weights/', '')
-        mid_path = 'un22_csv3d_sumscore_splitsites_20240514'
+        mid_path = 'un22_csv3d_sumscore_splitsites_20240630'
         weight_abs_path = os.path.join(f'D:\\ESMIRAcode\\RA_CLIP\\models\\weights\\{mid_path}', weight_path)
         if os.path.isfile(weight_abs_path):
             checkpoint = torch.load(weight_abs_path)
@@ -125,7 +125,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                         Agent = CAMAgent(model, target_layer, dataset,  
                                 groups, ram,
                                 # optional:
-                                cam_method=method, name_str=f'esmira_{fold_order}',# cam method and im paths and cam output
+                                cam_method=method, name_str=f'ramris_es_{target_biomarker[0]}_{fold_order}',# cam method and im paths and cam output
                                 batch_size=batch_size, select_category=0,  # info of the running process
                                 rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
                                 feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection

@@ -9,7 +9,7 @@ if __name__ == '__main__':
     dim = 3
     model_csv = True
     biomakrer_zoo = [['TSY'], ['SYN'], ['BME']] # 'SYN', 'TSY', 'BME',  ['SYN', 'TSY', 'BME'] #['TSY']#['SYN'], ['TSY'], ['BME']] #  , 
-    site_zoo = [['Wrist'], ['MCP'], ['Foot']]  #  , ['Wrist', 'MCP', 'Foot']]#,
+    site_zoo = [['Wrist']]#, ['MCP'], ['Foot']]  #  , ['Wrist', 'MCP', 'Foot']]#,
     # drc_zoo = [{'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'TRA', 'TSY':'TRA', 'BME':'COR'}, {'SYN':'COR', 'TSY':'COR', 'BME':'TRA'}]
     for n, site in enumerate(site_zoo):
         for bio in biomakrer_zoo:

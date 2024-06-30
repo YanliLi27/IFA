@@ -98,7 +98,7 @@ class Artists:
         return concat_img_all
         
 
-    def img_create(self, cam:np.array, origin:np.array, tc, name_str:str, use_origin:bool=True) ->None:
+    def img_create(self, cam:np.array, origin:np.array, name_str:str, use_origin:bool=True) ->None:
         # name_str mainly used (indiv info, group, dirc included), name extra for the situation that one origin have multiple cam
         
         # origin [channel(groups*n), (D), L, W] 
@@ -146,12 +146,12 @@ class Artists:
             if not (len(origin_shape)==5 and len(cam_shape)==4):
                 raise ValueError(f'shape of origin {origin_shape} and cam {cam_shape} doesnt meet the requirement of 3D output')
             for g in range(self.groups):
-                save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_g{self.groups}.nii.gz')
+                save_name = os.path.join(f'{name_str}_g{self.groups}.nii.gz')
                 writter = sitk.ImageFileWriter()
                 writter.SetFileName(save_name)
                 writter.Execute(sitk.GetImageFromArray(cam[g]))
 
-                origin_save_name = os.path.join(self.cam_dir[str(tc)], f'{name_str}_origin_g{self.groups}.nii.gz')
+                origin_save_name = os.path.join(f'{name_str}_origin_g{self.groups}.nii.gz')
                 if not os.path.isfile(origin_save_name):
                     writter.SetFileName(origin_save_name)
                     # [batch, organ_groups, z, y, x, channel] to [batch, organ_groups, z, y, x]

@@ -454,11 +454,11 @@ class CAMAgent():
                         tr_str = str(tc_truth[b])[:4] if len(str(tc_truth[b]))>4 else str(tc_truth[b])
                         ps_str = str(pred_score[b])[:4] if len(str(pred_score[b]))>4 else str(pred_score[b])
                         name_str = os.path.join(self.cam_dir[str(creator_tc[c])], f'{counter}_pr{pr_str}_tr{tr_str}_cf{ps_str}')
-                        self.artist.img_create(cam=tc_cam[b, :, c, ], origin=origin[b, :], tc=creator_tc[c], 
+                        self.artist.img_create(cam=tc_cam[b, :, c, ], origin=origin[b, :], 
                                                # [batch, groups, tc, (D), L, W] -> [groups, (D), L, W], 
                                                # [batch, channel(groups), (D), L, W] -> [channel(groups), (D), L, W]
-                                           name_str=name_str,
-                                           use_origin=use_origin)
+                                               name_str=name_str,
+                                               use_origin=use_origin)
                         # input: [channel(groups*n), (D), L, W] & [groups, (D), L, W]
             # ---------------------------------------  cam create  --------------------------------------- #
 
