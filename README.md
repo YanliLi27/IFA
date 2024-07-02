@@ -1,4 +1,5 @@
 # Integrated feature analysis (Unfinished version)
+> for cite this repositry, please cite: arxiv.org/abs/2407.01142
 
 ## The code for "Integrated feature analysis for deep learning interpretation and class_activation_maps"
 
