@@ -1,5 +1,5 @@
 # Integrated feature analysis (Unfinished version)
-> for cite this repositry, please cite: Integrated feature analysis for deep learning interpretation and class_activation_maps, arxiv.org/abs/2407.01142
+> for cite this repositry, please cite: Integrated feature analysis for deep learning interpretation and class activation maps, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
 > refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
