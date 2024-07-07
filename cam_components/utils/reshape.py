@@ -1,6 +1,6 @@
 import torch
 
-def reshape_transform(tensor:torch.Tensor, height=16, width=16):
+def reshape_transformer(tensor:torch.Tensor, height=16, width=16):
     # TODO NEED TO CONSIDER THE SIZE AT THAT LAYER
     if len(tensor.shape)==3:
         # B, C, L, W --> B, L/ph*W/pw, (ph*pw*C)  was applied in transformer

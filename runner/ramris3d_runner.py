@@ -1,5 +1,6 @@
 from typing import Union
 from cam_components.camagent import CAMAgent
+from cam_components.utils.reshape import reshape_transformer
 from torch.utils.data import DataLoader
 import os
 # from torchsummary import summary
@@ -88,7 +89,9 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                 model = make_csv3dmodel(img_2dsize=(depth, 512, 512), inch=group_num, num_classes=2, num_features=out_ch, extension=extension, 
                     groups=(len(target_site) * len(target_dirc)), width=2, dsconv=False, attn_type='normal', patch_size=(2,2), 
                     mode_feature=True, dropout=False, init=False)
-                target_layer = [model.features[-2]]
+                # target_layer = [model.features[-5].conv[-1]]
+                target_layer = [model.features[-1]] if target_biomarker==['TSY'] else [model.features[-5]]
+                # [-1:NNCNN, -2 Trans, -3 Trans, -4 Trans, -5 CNN]
                 # model = make_csvmodel(num_features=out_ch, mode_feature=True)
             else:
                 model = ModelClip(group_num=group_num, group_cap=depth, out_ch=out_ch, width=2, dimension=dimension) 
@@ -120,7 +123,12 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                 for mmrm in mmrm_zoo:
                     mm = mmrm[0]
                     rm = mmrm[1]
-                    mm = 'tanh' if (mm and tanh) else 'norm'
+                    if (mm and tanh):
+                        mm = 'tanh'
+                    elif mm:
+                        mm = 'norm'
+                    else:
+                        mm = False
                 # for mm in maxmin_flag_zoo:
                 #     for rm in remove_minus_flag_zoo:
                 #         if mm and tanh:
@@ -137,7 +145,8 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                             randomization=None,  # model randomization for sanity check
                             use_pred=use_pred,
                             rescaler=None,  # outer scaler
-                            cam_type='3D'  # output 2D or 3D
+                            cam_type='3D',  # output 2D or 3D
+                            reshape_transform=None, #reshape
                             )
                     Agent.creator_main(cr_dataset=None, creator_target_category=target_output, eval_act=False, cam_save=True,
                                 cluster=cluster, use_origin=False, max_iter=max_iter)

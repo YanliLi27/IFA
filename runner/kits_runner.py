@@ -32,30 +32,34 @@ def kits_runner(num_samples:int=10000, tanh:bool=True, weight_abs_path=None, mod
         raise ValueError(f'weights not exist: {weight_abs_path}')
     
     # -------------------------------- start loop -------------------------------- #
-    cam_method_zoo = ['gradcam']#, 'fullcam', 'gradcampp', 'xgradcam']
+    cam_method_zoo = ['gradcam', 'fullcam']#, 'fullcam', 'gradcampp', 'xgradcam']
     maxmin_flag_zoo = [True, False]  # intensity scaling
     remove_minus_flag_zoo = [False, True]  # remove the part below zero, default: True in the original Grad CAM
     im_selection_mode_zoo = ['all']#, 'diff_top']  # use feature selection or not -- relied on the importance matrices
+    mmrm_zoo = [[True, False], [True, True], [False, True]]
 
     for method in cam_method_zoo:
         for im in im_selection_mode_zoo:
-            for mm in maxmin_flag_zoo:
-                for rm in remove_minus_flag_zoo:
-                    if mm and tanh:
-                        mm = 'tanh'
-                    else:
-                        mm = 'norm'
-                    Agent = CAMAgent(model, target_layer, dataset,  
-                            groups=1, ram=False,
-                            # optional:
-                            cam_method=method, name_str=f'kits',# cam method and im paths and cam output
-                            batch_size=1, select_category=0,  # info of the running process
-                            rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
-                            feature_selection=im, feature_selection_ratio=0.05,  # feature selection
-                            randomization=None,  # model randomization for sanity check
-                            use_pred=False,
-                            rescaler=None,  # outer scaler
-                            cam_type='3D'  # output 2D or 3D
-                            )
-                    Agent.creator_main(cr_dataset=None, creator_target_category=[1], eval_act='corr', cam_save=True,
-                                cluster=None, use_origin=False, max_iter=None)
+            for mmrm in mmrm_zoo:
+                mm = mmrm[0]
+                rm = mmrm[1]
+                if (mm and tanh):
+                    mm = 'tanh'
+                elif mm:
+                    mm = 'norm'
+                else:
+                    mm = False
+                Agent = CAMAgent(model, target_layer, dataset,  
+                        groups=1, ram=False,
+                        # optional:
+                        cam_method=method, name_str=f'kits',# cam method and im paths and cam output
+                        batch_size=1, select_category=0,  # info of the running process
+                        rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
+                        feature_selection=im, feature_selection_ratio=0.05,  # feature selection
+                        randomization=None,  # model randomization for sanity check
+                        use_pred=False,
+                        rescaler=None,  # outer scaler
+                        cam_type='2D'  # output 2D or 3D
+                        )
+                Agent.creator_main(cr_dataset=None, creator_target_category=[1], eval_act='corr', cam_save=True,
+                            cluster=None, use_origin=False, max_iter=None)
