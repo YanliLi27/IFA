@@ -204,6 +204,35 @@ def make_csvmodel(img_2dsize=(512, 512), inch=20, num_classes=2,
                         initialization=init
                         )
 
+
+def make_csvmodel_simple(img_2dsize=(512, 512), inch=20, num_classes=2, 
+                        num_features=43, extension=157,
+                        groups=4, width=1, dsconv=False, 
+                        attn_type='normal', patch_size=(2,2), 
+                        mode_feature:bool=False, dropout:bool=True, init:bool=False):
+    tchannel:int = 384 if groups>4 else 160
+    block_setting = [
+                # block('c' for conv), out_channels, kernal_size, stride, groups, num of blocks, expansion(only for dsconv)
+                # block('t' for vit), out_channels, kernel_size, patch_size, groups, depth, mlp_dim(like the expansion)
+                # b,  c,  k, s, g, d, e  
+                ['c', 32, 3, 1, groups, 1, 0],  # [B, g*C, D, L/2(256), W/2(256)] -> [B, g*C, D, L/2(256), W/2(256)]
+                ['c', 64, 3, 2, groups, 3, 0],  # downsample + 3 conv # [B, g*C, D, L/2(256), W/2(256)] -> [B, g*C, D, L/4(128), W/4(128)]
+                ['c', 96, 3, 2, groups, 1, 0],  # downsample + conv # [B, g*C, D, L/4(128), W/4(128)] -> [B, g*C, D, L/8(64), W/8(64)]
+                ['c', tchannel, 3, 2, groups, 1, 0],  # downsample + conv # [B, g*C, D, L/8(64), W/8(64)] -> [B, g*C, D, L/16(32), W/16(32)]
+                ['t', tchannel, 3, patch_size[0], groups, 3, 640],  # vit # [B, g*C, D, L/16(32), W/16(32)] -> [B, g*C, D, L/16(32), W/16(32)]
+            ]
+    return ConvShareViT(img_2dsize, inch, num_classes=num_classes, 
+                        num_features=num_features, extension=extension,
+                        groups=groups, width=width,# basic
+                        dsconv=dsconv, attn_type=attn_type, # module type
+                        block_setting=block_setting,
+                        patch_size=patch_size,  # vit
+                        mode_feature=mode_feature,
+                        dropout=dropout,
+                        initialization=init
+                        )
+
+
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 

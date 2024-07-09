@@ -22,10 +22,10 @@ class Encoder(nn.Module):
     def __init__(self, img_ch=5, group_num:int=1):  # 6 is 3 TRA + 3 COR
         super(Encoder, self).__init__()
         self.Maxpool = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-        self.Conv1 = conv_block_group(ch_in=img_ch, ch_out=32*group_num, group_num=group_num)
-        self.Conv2 = conv_block_group(ch_in=32*group_num, ch_out=64*group_num, group_num=group_num)
-        self.Conv3 = conv_block_group(ch_in=64*group_num, ch_out=128*group_num, group_num=group_num)
-        self.Conv4 = conv_block_group(ch_in=128*group_num, ch_out=256*group_num, group_num=group_num)
+        self.Conv1 = conv_block_group(ch_in=img_ch, ch_out=16*group_num, group_num=group_num)
+        self.Conv2 = conv_block_group(ch_in=16*group_num, ch_out=32*group_num, group_num=group_num)
+        self.Conv3 = conv_block_group(ch_in=32*group_num, ch_out=64*group_num, group_num=group_num)
+        self.Conv4 = conv_block_group(ch_in=64*group_num, ch_out=128*group_num, group_num=group_num)
     def forward(self, x):
         # encoding path
         x1 = self.Conv1(x)
@@ -43,10 +43,7 @@ class Classifier(nn.Module):
         super(Classifier, self).__init__()
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier_fc = nn.Sequential(
-            nn.Linear(256*group_num * 7 * 7, 4096),
-            nn.SiLU(True),
-            nn.Dropout(),
-            nn.Linear(4096, 4096),
+            nn.Linear(128*group_num * 7 * 7, 4096),
             nn.SiLU(True),
             nn.Dropout(),
             nn.Linear(4096, num_classes),
@@ -66,10 +63,7 @@ class Classifier11(nn.Module):
         super(Classifier11, self).__init__()
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.classifier_fc = nn.Sequential(
-            nn.Linear(256*group_num, 2048),
-            nn.SiLU(True),
-            nn.Dropout(),
-            nn.Linear(2048, 2048),
+            nn.Linear(128*group_num, 2048),
             nn.SiLU(True),
             nn.Dropout(),
             nn.Linear(2048, num_classes),

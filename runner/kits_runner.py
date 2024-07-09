@@ -8,7 +8,7 @@ import torch
 
 
 def kits_runner(num_samples:int=10000, tanh:bool=True, weight_abs_path=None, model_name:str='csv'):
-    trainset, valset = kits_intialization(datacsv=f'./dataprepare/kits/splitdatapath_{num_samples}.npy')
+    trainset, valset = kits_intialization(datacsv=f'D:\\ESMIRAcode\\ACAM\\dataprepare\\kits\\splitdatapath_{num_samples}.npy')
     # traindataset = KitsDataset(stacked_list=trainset, transform=None, val_flag=False, repeat=1, maskout=False)
     valdataset = KitsDataset(stacked_list=valset, transform=None, val_flag=True, repeat=1, maskout=False)
     dataset = DataLoader(dataset=valdataset, batch_size=1, shuffle=False,

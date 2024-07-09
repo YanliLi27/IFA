@@ -434,9 +434,11 @@ class CAMAgent():
                     tc_pred_category = clusterpredca  # [batch]
                     tc_score = clustersc
                     tc_truth = clustertr
-                tc_pred_category = np.squeeze(tc_pred_category)
-                tc_score = np.squeeze(tc_score)
-                tc_truth = np.squeeze(tc_truth)
+                
+                if len(tc_pred_category.shape)>1:  # squeeze only when have multiple batch/cluster
+                    tc_pred_category = np.squeeze(tc_pred_category, axis=-1)
+                    tc_score = np.squeeze(tc_score, axis=-1)
+                    tc_truth = np.squeeze(tc_truth, axis=-1)
                 # [batch, groups/channels, cluster/tc, (D), L, W]
                 # 只有两种情况：存2D和存3D，但是根据输入的维度在合并时有出入：
                     # 所有1D数据[batch, groups/channels, cluster/tc, W] 转2D
