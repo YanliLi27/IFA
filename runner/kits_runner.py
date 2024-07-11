@@ -53,7 +53,7 @@ def kits_runner(num_samples:int=10000, tanh:bool=True, weight_abs_path=None, mod
                         groups=1, ram=False,
                         # optional:
                         cam_method=method, name_str=f'kits',# cam method and im paths and cam output
-                        batch_size=1, select_category=0,  # info of the running process
+                        batch_size=1, select_category=1,  # info of the running process
                         rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
                         feature_selection=im, feature_selection_ratio=0.05,  # feature selection
                         randomization=None,  # model randomization for sanity check
