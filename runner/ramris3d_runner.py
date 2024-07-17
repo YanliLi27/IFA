@@ -90,7 +90,7 @@ def ramris3d_pred_runner(data_dir='', target_category:Union[None, int, str, list
                     groups=(len(target_site) * len(target_dirc)), width=2, dsconv=False, attn_type='normal', patch_size=(2,2), 
                     mode_feature=True, dropout=False, init=False)
                 # target_layer = [model.features[-5].conv[-1]]
-                target_layer = [model.features[-1]] if target_biomarker==['TSY'] else [model.features[-5]]
+                target_layer = [model.features[-1]]
                 # [-1:NNCNN, -2 Trans, -3 Trans, -4 Trans, -5 CNN]
                 # model = make_csvmodel(num_features=out_ch, mode_feature=True)
             else:

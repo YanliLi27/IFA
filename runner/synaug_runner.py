@@ -29,17 +29,28 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
     from predefined.raclip_components.models.csv3d import make_csv3dmodel
     from predefined.raclip_components.models.convsharevit import make_csvmodel
     from predefined.raclip_components.utils.output_finder import output_finder
+    from predefined.raclip_components.generators.utli_generator import ESMIRA_generator
     import torch
 
 
     if target_biomarker:
         for item in target_biomarker:
             assert (item in ['ERO', 'BME', 'SYN', 'TSY'])
+    refer_generator = ESMIRA_generator('E:\\ESMIRA_RAprediction\\Export20Jun22', None, target_category, target_site, target_dirc, 
+                                         ['Reader1', 'Reader2'], target_biomarker, 'clip', working_dir=r'D:\ESMIRAcode\RA_CLIP', 
+                                         print_flag=True, maxfold=5, score_sum=score_sum)
     dataset_generator = Synaug_generator(maxfold=5, score_sum=False)
     for fold_order in range(0, maxfold):
+        _, refer_dataset = refer_generator.returner(task_mode='clip', phase='train', fold_order=fold_order,
+                                                    material='img', monai=True, full_img=full_img,
+                                                    dimension=dimension, data_balance=False,
+                                                    path_flag=False)
+        ref_dataset = DataLoader(dataset=refer_dataset, batch_size=batch_size, shuffle=False,
+                                 num_workers=4, pin_memory=True)
+        
         _, val_dataset = dataset_generator.returner(train_flag=False, fold_order=fold_order)
         dataset = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False,
-            num_workers=4, pin_memory=True)
+                             num_workers=4, pin_memory=True)
         # input: [N*5, 512, 512] + int(label)
 
         # Step. 2 get the model: (can be any nn.Module, make sure it fit your input size and output size)
@@ -88,7 +99,7 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
 
         weight_path = output_finder(target_biomarker, target_site, target_dirc, None, fold_order, sumscore=score_sum)
         weight_path = weight_path.replace('./models/weights/', '')
-        mid_path = 'un22_csv3d_sumscore_splitsites_20240514'
+        mid_path = 'un22_csv3d_sumscore_splitsites_20240630'
         weight_abs_path = os.path.join(f'D:\\ESMIRAcode\\RA_CLIP\\models\\weights\\{mid_path}', weight_path)
         if os.path.isfile(weight_abs_path):
             checkpoint = torch.load(weight_abs_path)
@@ -112,7 +123,7 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
                             mm = 'tanh'
                         else:
                             mm = 'norm'
-                        Agent = CAMAgent(model, target_layer, dataset,  
+                        Agent = CAMAgent(model, target_layer, ref_dataset,  
                                         groups, ram,
                                         # optional:
                                         cam_method=method, name_str=f'synaug4ramris_{fold_order}',# cam method and im paths and cam output

@@ -36,7 +36,7 @@ class Synaug_generator:
         return target_split_list
     
 
-    def _split_definer(split_list:list, fold_order:int) ->Tuple[list, list]:
+    def _split_definer(self, split_list:list, fold_order:int) ->Tuple[list, list]:
         # list [[id[], id[], ...] *5] 5 fold
         # -> train list [id[], id[], id[], ...], val list [id[], id[], id[], ...]
         # in aimira:
@@ -51,7 +51,7 @@ class Synaug_generator:
                 train_split_dict.extend(split_list[i])  # [LIST*4]
         return train_split_dict, val_split_dict
     
-    def _val_split_definer(split_list:list) ->list:
+    def _val_split_definer(self, split_list:list) ->list:
         # list [[id[], id[], ...] *5] 5 fold
         # -> train list [id[], id[], id[], ...], val list [id[], id[], id[], ...]
         val_split_dict = []
@@ -60,14 +60,14 @@ class Synaug_generator:
         return val_split_dict
     
 
-    def returner(self, train_flag:bool=False, fold_order:int=0):
+    def returner(self, train_flag:bool=False, fold_order:int=0, path_flag:bool=True):
         if train_flag:
             traindata, valdata = self._split_definer(self.datalist, fold_order)
-            traindataset = SynaugReg(traindata, None, False, True, cleanup=False)
-            valdataset = SynaugReg(valdata, None, False, True, cleanup=False)
+            traindataset = SynaugReg(traindata, None, False, path_flag=True, cleanup=False)
+            valdataset = SynaugReg(valdata, None, False, path_flag=True, cleanup=False)
         else:
             valdata = self._val_split_definer(self.datalist)
-            valdataset = SynaugReg(valdata, None, False, True, cleanup=False)
+            valdataset = SynaugReg(valdata, None, False, path_flag=True, cleanup=False)
             traindataset = None
         return traindataset, valdataset
         

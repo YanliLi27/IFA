@@ -6,6 +6,7 @@ from typing import Tuple
 from skimage.transform import resize
 import torch
 from predefined.synaug_components.generators.dataset.cleanup import clean_main
+from predefined.synaug_components.generators.dataset.central_slice import central_selector
 
 
 class SynaugReg(data.Dataset):
@@ -37,12 +38,13 @@ class SynaugReg(data.Dataset):
     def _readimg(self, path):
         data_array = sitk.ReadImage(path)
         data_array = sitk.GetArrayFromImage(data_array)
-        data_array = self._itensity_normalize(data_array)  # [5, 512, 512]
-        if data_array.shape != (5, 512, 512):
-            if data_array.shape == (5, 256, 256):
-                data_array = resize(data_array, (5, 512, 512), preserve_range=True)  # preserve_range: no normalization
+        _, central_7_start = central_selector(data_array)
+        data_array = self._itensity_normalize(data_array[central_7_start:central_7_start+7])  # [5, 512, 512]
+        if data_array.shape != (7, 512, 512):
+            if data_array.shape == (7, 256, 256):
+                data_array = resize(data_array, (7, 512, 512), preserve_range=True)  # preserve_range: no normalization
             else:
-                raise ValueError('the shape of input:{}, the id: {}, central_slice: {}'.format(data_array.shape, path))
+                raise ValueError('the shape of input:{}, the id: {}'.format(data_array.shape, path))
         if self.cleanup:
             data_array = clean_main(data_array)
         return data_array

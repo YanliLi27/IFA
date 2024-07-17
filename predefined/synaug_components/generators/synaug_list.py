@@ -49,7 +49,7 @@ def returnsynorigin(path_synaug:str) -> str:
     else:
         origin = os.path.join(origin, 'itk')
     filename = os.listdir(origin)
-    return os.path.join(origin, filename)
+    return os.path.join(origin, filename[0])
 
 
 def returnsynauglist(path_synaug:str) -> list[str]:
