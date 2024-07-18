@@ -39,7 +39,7 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
     refer_generator = ESMIRA_generator('E:\\ESMIRA_RAprediction\\Export20Jun22', None, target_category, target_site, target_dirc, 
                                          ['Reader1', 'Reader2'], target_biomarker, 'clip', working_dir=r'D:\ESMIRAcode\RA_CLIP', 
                                          print_flag=True, maxfold=5, score_sum=score_sum)
-    dataset_generator = Synaug_generator(maxfold=5, score_sum=False)
+    dataset_generator = Synaug_generator(maxfold=5, score_sum=score_sum)
     for fold_order in range(0, maxfold):
         _, refer_dataset = refer_generator.returner(task_mode='clip', phase='train', fold_order=fold_order,
                                                     material='img', monai=True, full_img=full_img,
@@ -48,7 +48,7 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
         ref_dataset = DataLoader(dataset=refer_dataset, batch_size=batch_size, shuffle=False,
                                  num_workers=4, pin_memory=True)
         
-        _, val_dataset = dataset_generator.returner(train_flag=False, fold_order=fold_order)
+        _, val_dataset = dataset_generator.returner(train_flag=False, fold_order=fold_order, path_flag=False)
         dataset = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False,
                              num_workers=4, pin_memory=True)
         # input: [N*5, 512, 512] + int(label)
@@ -136,7 +136,7 @@ def synaug_pred_runner(target_category:Union[None, int, str, list]=None,
                                         cam_type='3D'  # output 2D or 3D
                                         )
                         device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                        for x,x2,y in dataset:
+                        for x,x2 in dataset:
                             x = x.to(dtype=torch.float32).to(device)
                             x2 = x2.to(dtype=torch.float32).to(device)
 

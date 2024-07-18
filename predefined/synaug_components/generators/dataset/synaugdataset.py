@@ -12,7 +12,7 @@ from predefined.synaug_components.generators.dataset.central_slice import centra
 class SynaugReg(data.Dataset):
     def __init__(self, datalist:list[str], transform=None, mean_std:bool=False, path_flag:bool=False, cleanup:bool=False):
         # train_dict {'site_dirc':[LIST(Target+Atlas): subdir\names.mha:cs:label ], ...}
-        self.data = datalist
+        self.data = datalist # [N* [origin, aug]]
         self.transform = transform # default to be nothing
         self.mean_std = mean_std
         self.path_flag = path_flag
@@ -24,16 +24,13 @@ class SynaugReg(data.Dataset):
 
 
     def __getitem__(self, idx):
-        data, aug, path = self._load_file(idx)
+        data, aug = self._load_file(idx)
         data = torch.from_numpy(data)
         aug = torch.from_numpy(aug)
-        if self.transform is not None:
-            pair = {'image':data, 'mask':mask}
-            pair = self.transform(pair)
-            data, mask = pair['image'], pair['mask']
+        path = self.data[idx][0]
         if self.path_flag:
             return data, aug, path
-        return data, aug  # [N*5, 512, 512], 1:int
+        return data, aug  # [N, 7, 512, 512], 1:int
     
     def _readimg(self, path):
         data_array = sitk.ReadImage(path)
@@ -47,13 +44,13 @@ class SynaugReg(data.Dataset):
                 raise ValueError('the shape of input:{}, the id: {}'.format(data_array.shape, path))
         if self.cleanup:
             data_array = clean_main(data_array)
-        return data_array
+        return np.expand_dims(data_array, axis=0)  # [7, 512, 512] -> [1, 7, 512, 512]
 
 
     def _load_file(self, idx):  # item -- [5, 512, 512] * N
         data_array = self._readimg(self.data[idx][0])
         aug_array = self._readimg(self.data[idx][1])
-        return np.array(data_array).astype(np.float32), np.array(aug_array).astype(np.float32), self.data[idx]  # [N*5, 512, 512], 1:int
+        return np.array(data_array).astype(np.float32), np.array(aug_array).astype(np.float32)  # [N*5, 512, 512], 1:int
 
 
     def _itensity_normalize(self, volume: np.array):

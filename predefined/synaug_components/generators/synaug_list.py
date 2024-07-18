@@ -44,12 +44,14 @@ def returnsynorigin(path_synaug:str) -> str:
     origin = os.path.dirname(os.path.dirname(os.path.dirname(path_synaug)))  
     # r'R:\ESMIRA\ESMIRA_Database\LUMC\ESMIRA_patient_Arth3803_EAC\20140702\RightWrist_PostTRAT1f
     origin = os.path.join(origin, 'images')
+    # r'R:\ESMIRA\ESMIRA_Database\LUMC\ESMIRA_patient_Arth3803_EAC\20140702\RightWrist_PostTRAT1f\images
     if os.path.exists(os.path.join(origin, 'mha')):
         origin = os.path.join(origin, 'mha')
     else:
         origin = os.path.join(origin, 'itk')
     filename = os.listdir(origin)
     return os.path.join(origin, filename[0])
+    # r'R:\ESMIRA\ESMIRA_Database\LUMC\ESMIRA_patient_Arth3803_EAC\20140702\RightWrist_PostTRAT1f\images\ESMIRA-LUMC-6372679_EAC-20140702-RightWrist_PostTRAT1f.mha
 
 
 def returnsynauglist(path_synaug:str) -> list[str]:

@@ -63,11 +63,11 @@ class Synaug_generator:
     def returner(self, train_flag:bool=False, fold_order:int=0, path_flag:bool=True):
         if train_flag:
             traindata, valdata = self._split_definer(self.datalist, fold_order)
-            traindataset = SynaugReg(traindata, None, False, path_flag=True, cleanup=False)
-            valdataset = SynaugReg(valdata, None, False, path_flag=True, cleanup=False)
+            traindataset = SynaugReg(traindata, None, False, path_flag=path_flag, cleanup=False)
+            valdataset = SynaugReg(valdata, None, False, path_flag=path_flag, cleanup=False)
         else:
             valdata = self._val_split_definer(self.datalist)
-            valdataset = SynaugReg(valdata, None, False, path_flag=True, cleanup=False)
+            valdataset = SynaugReg(valdata, None, False, path_flag=path_flag, cleanup=False)
             traindataset = None
         return traindataset, valdataset
         

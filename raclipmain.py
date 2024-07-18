@@ -28,7 +28,7 @@ if __name__ == '__main__':
     #                             score_sum=True, maxfold=1)
             
     # synaug -- for denis' augmentation
-    synaug_pred_runner(target_category=None, target_site=['Wrist'], target_dirc=['TRA', 'COR'],
+    synaug_pred_runner(target_category=None, target_site=['Wrist'], target_dirc=['TRA'],
                         target_biomarker=['TSY'],
                         full_img=7, dimension=3,
                         target_output=[0],
