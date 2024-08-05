@@ -266,10 +266,10 @@ class CAMAgent():
                     single_max_reviser = 1
 
                 if self.ram:
-                    y_d = y.data.cpu().numpy()[i][target_category]
+                    y_d = target_category  # 回归任务无法保证数值相等或者有某个近似范围，因此直接全取
                 else:
                     y_d = y.data.cpu().numpy()[i]  # 只叠加正确分类的部分
-                if single_predict_category == y_d:
+                if (self.ram) or (not self.ram and single_predict_category == y_d):
                     # 添加总体IM
                     if im_overall is None:
                         im_overall = single_grayscale_cam
