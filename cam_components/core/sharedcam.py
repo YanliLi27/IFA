@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from cam_components.core.activations_and_gradients import ActivationsAndGradients
+from .activations_and_gradients import ActivationsAndGradients
 from scipy.special import softmax
 import monai
 import cv2  # only for resize

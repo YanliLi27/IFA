@@ -1,6 +1,6 @@
 import torch
 from tqdm import tqdm
-from cam_components.core.sharedcam import SharedCAM
+from ..core.sharedcam import SharedCAM
 
 
 class ScoreCAM(SharedCAM):

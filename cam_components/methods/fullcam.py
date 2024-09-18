@@ -1,4 +1,4 @@
-from cam_components.core.sharedcam import SharedCAM
+from ..core.sharedcam import SharedCAM
 
 
 class FullCAM(SharedCAM):

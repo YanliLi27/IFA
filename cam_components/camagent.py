@@ -4,12 +4,12 @@
 import numpy as np
 from typing import Union, Literal
 from torch.utils.data import DataLoader, Dataset
-from cam_components.methods import GradCAM, FullCAM, GradCAMPP, XGradCAM, ScoreCAM
-from cam_components.core.rescale import Rescaler
-from cam_components.preparation import *
-from cam_components.agent import *
-from cam_components.image.image_artist import Artists
-from cam_components.metric.metric_cal import EvalAgent
+from .methods import GradCAM, FullCAM, GradCAMPP, XGradCAM, ScoreCAM
+from .core.rescale import Rescaler
+from .preparation import *
+from .agent import *
+from .image.image_artist import Artists
+from .metric.metric_cal import EvalAgent
 import os
 import torch
 import platform

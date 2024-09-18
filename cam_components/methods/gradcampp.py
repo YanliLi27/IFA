@@ -1,5 +1,5 @@
 import numpy as np
-from cam_components.core.sharedcam import SharedCAM
+from ..core.sharedcam import SharedCAM
 
 
 class GradCAMPP(SharedCAM):
