@@ -11,12 +11,13 @@
 ```bash
 python ifasetup.py install
 ```
-### Step2: set your model and dataset
+### Step2: set your model, dataset and the target object (category)
 ```python
 # Initialize your model
 model:nn.Module = 'your model'
 target_layer:list = [model.feature[-1]]  # the layer/layers for obtaining heatmaps
 dataset = 'your dataset'  # Dataset, not Dataloader
+select_category:int = 1
 ```
 ### Step3: Import the package, Give the following information to the class, most of them are default.
 ```python
@@ -24,13 +25,13 @@ from cam_components.camagent import CAMAgent
 Agent = CAMAgent(model,   # your model
                  target_layer,  # the layer/layers for obtaining heatmaps
                  dataset,  # Dataset, not Dataloader
-              # The following attributes are usually defaults
+              # The following attributes are usually default
                  groups=1,  # group conv in your model
                  ram=False,  # for regression tasks, regression activation mapping
                  cam_method='fullcam',  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ] more in './cam_components/methods/*cam.py'
                  name_str=f'{your_task}',  # output name: './output/*namestr*/im'
                  batch_size=batch_size,  # for acceleration
-                 select_category=target_category,  # default to be 0, the target category in your task
+                 select_category=select_category,  # default to be 0, the target category in your task
                  rescale='norm',  # ['norm', 'tanh']  different method for calibration and rescaling
                  remove_minus_flag=False,  # If only keep the values above 0 in orginal weighted heatmaps
                  scale_ratio=1,  # for better visualization
@@ -42,7 +43,7 @@ Agent = CAMAgent(model,   # your model
 ```python
 for x, y in Dataloader(Dataset):
     # x: shape of 2D [batch, 1, L, W] / 3D [batch, 1, H, L, W]
-    indiv_cam = Agent.indiv_return(x, target_category, None)
+    indiv_cam = Agent.indiv_return(x, select_category)
     # indiv_cam: shape of 2D [batch, 1(Group Conv), 1(category in list), L, W] / 3D [batch, 1(Group Conv), 1(category in list), H, L, W]
 ```
 ### Step5: Input your data and get the rescaled CAMs at a dataset scale with analysis.
