@@ -6,12 +6,12 @@
 
 
 ## Use:
-### 0. **For simple use** ###
-#### Step1: Setup the module: cam_components into your project.
+> **For simple use**
+### Step1: Setup the module: cam_components into your project.
 ```bash
 python ifasetup.py install
 ```
-#### Step2: Import the package, set your model and dataset
+### Step2: Import the package, set your model and dataset
 ```python
 # Initialize your model
 from cam_components.camagent import CAMAgent
@@ -19,7 +19,7 @@ model:nn.Module = 'your model'
 target_layer:list = [model.feature[-1]]  # the layer/layers for obtaining heatmaps
 dataset = 'your dataset'  # Dataset, not Dataloader
 ```
-#### Step3: Give the following information to the class, most of them are default.
+### Step3: Give the following information to the class, most of them are default.
 ```python
 Agent = CAMAgent(model,   # your model
                  target_layer,  # the layer/layers for obtaining heatmaps
@@ -37,11 +37,14 @@ Agent = CAMAgent(model,   # your model
                  feature_selection_ratio=1.0,  # The ratio of selected features/all features
                  cam_type='2D')  # Output dimension.
 ```
-#### Step4: Input your data and get the rescaled CAMs.
+### Step4: Input your data and get the rescaled CAMs.
 ```python
-indiv_cam = Agent.indiv_return(x, target_category, None)
+for x, y in Dataloader(Dataset):
+    # x: shape of 2D [batch, 1, L, W] / 3D [batch, 1, H, L, W]
+    indiv_cam = Agent.indiv_return(x, target_category, None)
+    # indiv_cam: shape of 2D [batch, 1(Group Conv), 1(category in list), L, W] / 3D [batch, 1(Group Conv), 1(category in list), H, L, W]
 ```
-#### Step5: Input your data and get the rescaled CAMs at a dataset scale with analysis.
+### Step5: Input your data and get the rescaled CAMs at a dataset scale with analysis.
 ```python
 Agent.creator_main(dataset,   # your dataset, optional
                    [categories],    # select the categories
@@ -52,17 +55,25 @@ Agent.creator_main(dataset,   # your dataset, optional
                    max_iter=None)   # early stop
 ```
 
-#### Step6: For feature analysis, you can find the matrices in './output/*namestr*/im'
+### Step6: For feature analysis, you can find the matrices in './output/*namestr*/im'
 
-
-### 1. main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
+## Extension:
+### 1. Examples
+#### main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 > Find them in the ./runner.
 > In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 
 ### 2. **Add more CAM methods, please see the './cam_components/methods/*cam.py'**
 
+### 3. **Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'**
+
+### 4. For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
+> Importance matrices for features: './output/*namestr*/im'
+> Saved heatmaps: './output/*namestr*/cam'
+> Metrics of evalution: './output/*namestr*/figs'
 
 
+### Citation
 > for cite this repositry, please cite: Integrated feature analysis for calibrating class activation maps and beyond, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
@@ -75,10 +86,4 @@ Agent.creator_main(dataset,   # your dataset, optional
 > Thanks to https://github.com/frgfm/torch-cam and https://github.com/jacobgil/pytorch-grad-cam for their functions.
 
 > Currently, default test support for MNIST, ILSVRC2012, Cats&Dogs, and other four public medical datasets. ESMIRA (private data) is not supported as it includes the information of patients.
-
-### 3. **Change the functions for importance matrices and evaluation, see /cam_components/metric/*.py**
-
-
-
-### 4. For the output, you can create a dir named output for collection, the default is ./output/*namestr*/im&cam&figs.
 
