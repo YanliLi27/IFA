@@ -11,16 +11,16 @@
 ```bash
 python ifasetup.py install
 ```
-### Step2: Import the package, set your model and dataset
+### Step2: set your model and dataset
 ```python
 # Initialize your model
-from cam_components.camagent import CAMAgent
 model:nn.Module = 'your model'
 target_layer:list = [model.feature[-1]]  # the layer/layers for obtaining heatmaps
 dataset = 'your dataset'  # Dataset, not Dataloader
 ```
-### Step3: Give the following information to the class, most of them are default.
+### Step3: Import the package, Give the following information to the class, most of them are default.
 ```python
+from cam_components.camagent import CAMAgent
 Agent = CAMAgent(model,   # your model
                  target_layer,  # the layer/layers for obtaining heatmaps
                  dataset,  # Dataset, not Dataloader
