@@ -37,6 +37,7 @@ setup(name='IFA',
         "cam_components": ["*.pyi", "**/*.pyi", "*.py", "*/*.py", "*.pxd", "*/*.pxd", '*/*.pyd', '*.pyd', '*.pyx', '*/*.pyx'],
         '.': ['requirements.txt']
     },
+    zip_safe=False,
     license="MIT"
     )
 

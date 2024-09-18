@@ -1,11 +1,10 @@
 matplotlib
-numpy @ file:///C:/b/abs_16b2j7ad8n/croot/numpy_and_numpy_base_1704311752418/work/dist/numpy-1.26.3-cp311-cp311-win_amd64.whl#sha256=5f2c4b54fd5d52b9fb18e32607c79b03cf14665cecce8a5a10e2950559df4651
+numpy
 opencv-python==4.9.0.80
 openpyxl==3.0.10
-pandas @ file:///C:/b/abs_fej9bi0gew/croot/pandas_1702318041921/work/dist/pandas-2.1.4-cp311-cp311-win_amd64.whl#sha256=d3609b7cc3e3c4d99ad640a4b8e710ba93ccf967ab8e5245b91033e0200f9286
-pandas-flavor @ file:///home/conda/feedstock_root/build_artifacts/pandas-flavor_1699047263912/work
+pandas
 scikit-image==0.22.0
-scikit-learn @ file:///D:/bld/scikit-learn_1705657492391/work
+scikit-learn
 scipy==1.11.4
 SimpleITK==2.3.1
-tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1691671248568/work
+tqdm
