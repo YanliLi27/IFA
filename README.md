@@ -24,6 +24,7 @@ from cam_components.camagent import CAMAgent
 Agent = CAMAgent(model,   # your model
                  target_layer,  # the layer/layers for obtaining heatmaps
                  dataset,  # Dataset, not Dataloader
+              # The following attributes are usually defaults
                  groups=1,  # group conv in your model
                  ram=False,  # for regression tasks, regression activation mapping
                  cam_method=method,  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ] more in './cam_components/methods/*cam.py'
@@ -31,7 +32,7 @@ Agent = CAMAgent(model,   # your model
                  batch_size=batch_size,  # for acceleration
                  select_category=target_category,  # default to be 0, the target category in your task
                  rescale='norm',  # ['norm', 'tanh']  different method for calibration and rescaling
-                 remove_minus_flag=True,  # If only keep the values above 0 in orginal weighted heatmaps
+                 remove_minus_flag=False,  # If only keep the values above 0 in orginal weighted heatmaps
                  scale_ratio=1,  # for better visualization
                  feature_selection='all',  # ['reverse_diff_top', 'max', 'top', 'diff_top', 'freq', 'index', 'all'] if select features for visualization
                  feature_selection_ratio=1.0,  # The ratio of selected features/all features
