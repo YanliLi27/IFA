@@ -27,7 +27,7 @@ Agent = CAMAgent(model,   # your model
               # The following attributes are usually defaults
                  groups=1,  # group conv in your model
                  ram=False,  # for regression tasks, regression activation mapping
-                 cam_method=method,  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ] more in './cam_components/methods/*cam.py'
+                 cam_method='fullcam',  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ] more in './cam_components/methods/*cam.py'
                  name_str=f'{your_task}',  # output name: './output/*namestr*/im'
                  batch_size=batch_size,  # for acceleration
                  select_category=target_category,  # default to be 0, the target category in your task
