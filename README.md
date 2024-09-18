@@ -11,7 +11,8 @@
 ```bash
 python ifasetup.py install
 ```
-### Step2: set your model, dataset and the target object (category)
+
+### Step2: Set your model, dataset and the target object (category)
 ```python
 # Initialize your model
 model:nn.Module = 'your model'
@@ -19,6 +20,7 @@ target_layer:list = [model.feature[-1]]  # the layer/layers for obtaining heatma
 dataset = 'your dataset'  # Dataset, not Dataloader
 select_category:int = 1
 ```
+
 ### Step3: Import the package, Give the following information to the class, most of them are default.
 ```python
 from cam_components.camagent import CAMAgent
@@ -39,6 +41,7 @@ Agent = CAMAgent(model,   # your model
                  feature_selection_ratio=1.0,  # The ratio of selected features/all features
                  cam_type='2D')  # Output dimension.
 ```
+
 ### Step4: Input your data and get the rescaled CAMs.
 ```python
 for x, y in Dataloader(Dataset):
