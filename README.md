@@ -1,5 +1,10 @@
 # Integrated feature analysis (Unfinished version)
-> for cite this repositry, please cite: Integrated feature analysis for deep learning interpretation and class activation maps, arxiv.org/abs/2407.01142
+
+<p > A pytorch package to calculate the calibrated CAMs and analyze datasets based on trained models  </p>
+
+
+
+> for cite this repositry, please cite: Integrated feature analysis for calibrating class activation maps and beyond, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
 > refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
