@@ -1,6 +1,6 @@
-# Integrated feature analysis (Unfinished version)
+# An anaylsis framework for interpreting extracted features and normalizing class activation maps (Unfinished version)
 
-<p > A pytorch package to calculate the calibrated CAMs and analyze datasets based on trained models  </p>
+<p > A pytorch package to calculate the normalized CAMs and analyze datasets based on trained models  </p>
 <p > Input support: 2D, 3D images and signals, Output: Single/Multiple/Clustered output </p>
 
 
@@ -79,7 +79,7 @@ Agent.creator_main(dataset,   # your dataset, optional
 
 
 ### Citation
-> for cite this repositry, please cite: Integrated feature analysis for calibrating class activation maps and beyond, arxiv.org/abs/2407.01142
+> for cite this repositry, please cite: An anaylsis framework for interpreting extracted features and normalizing class activation maps, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
 > refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
