@@ -79,7 +79,7 @@ Agent.creator_main(dataset,   # your dataset, optional
 
 
 ### Citation
-> for cite this repositry, please cite: An anaylsis framework for interpreting extracted features and normalizing class activation maps, arxiv.org/abs/2407.01142
+> for cite this repositry, please cite: Integrated feature analysis for deep learning interpretation and class activation maps, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
 > refering to "A lightweight model for physiological signals-based sleep staging with multiclass CAM for model explainability", Y. Yang, Y. Li.
