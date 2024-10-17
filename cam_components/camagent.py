@@ -529,6 +529,8 @@ class CAMAgent():
                 cluster_counter+=cluster[i]
             tc_cam = clustercam  # [batch, groups/channels, cluster, (D), L, W]
         # [batch, groups, cluster, (D), L, W]
-        return tc_cam, pred_category if pred_flag else tc_cam  # [batch, groups, cluster/tc, (D), L, W]
+        if pred_flag:
+            return tc_cam, pred_category  
+        return tc_cam  # [batch, groups, cluster/tc, (D), L, W]
         # [1, 1, cluster/tc, (D), L, W], [batch, 1(label)]
             
