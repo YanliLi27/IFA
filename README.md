@@ -4,6 +4,9 @@
 <p > Input support: 2D, 3D images and signals, Output: Single/Multiple/Clustered output </p>
 
 
+## Purposes:
+![ExampleIFA](https://github.com/YanliLi27/IFA/edit/main/examples.jpg)
+
 
 ## Use:
 > **For simple use**
