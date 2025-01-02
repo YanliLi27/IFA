@@ -5,7 +5,7 @@
 
 
 ## Purposes:
-![ExampleIFA](https://github.com/YanliLi27/IFA/edit/main/examples.jpg)
+![ExampleIFA](https://github.com/YanliLi27/IFA/edit/main/example.jpg)
 
 
 ## Use:
