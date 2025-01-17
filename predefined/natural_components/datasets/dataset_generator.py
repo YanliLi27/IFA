@@ -33,8 +33,8 @@ def dataset_generator(model_flag:str='vgg', task:str='CatsDogs', dataset_split:s
             root = 'D:\\CatsDogs\\kaggle\\working\\extracted\\train' 
         else: 
             root = pre_root
-        train_img_list = os.listdir(root)[:9999] + os.listdir(root)[12500:22499] # 0-12499 cats, 12500-24999 dogs
-        val_img_list = os.listdir(root)[10000:12499] + os.listdir(root)[22499:]
+        train_img_list = os.listdir(root)[12500:22499] + os.listdir(root)[:9999]  # 0-12499 cats, 12500-24999 dogs
+        val_img_list = os.listdir(root)[22499:] + os.listdir(root)[10000:12499]
         test_data_root = root.replace('train', 'test1')
         test_img_list = os.listdir(test_data_root)
         # set the dataset

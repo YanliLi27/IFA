@@ -311,7 +311,8 @@ class CAMAgent():
                     cam_save:bool=True, 
                     cluster:Union[None, list[int], np.array]=None,  # 同一个cluster的放到一个nii里面
                     use_origin:bool=True,  # for overlay/or not
-                    max_iter:Union[None, int]=None
+                    max_iter:Union[None, int]=None,
+                    random_im_mask:bool=False
                     ):
         if creator_target_category=='Default':
             creator_target_category = self.select_category
@@ -372,7 +373,7 @@ class CAMAgent():
                 im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
                 grayscale_cam, predict_category, pred_score, nega_score\
                     = self.camoperator(input_tensor=x, target_category=tc, gt=y, ifaoperation=False, 
-                                        im=im, out_logit=logit_flag, rescaler=rescaler)
+                                        im=im, out_logit=logit_flag, rescaler=rescaler, random=random_im_mask)
             
                 # TODO check the size of these items, avoid differences caused by ram
                 # predict_category = predict_category[0] if isinstance(predict_category[0], list) else predict_category
@@ -473,7 +474,8 @@ class CAMAgent():
     def indiv_return(self, x:torch.Tensor,  # make sure the input is a 4-dimension tensor
                     creator_target_category:Union[None, str, int, list]='Default',
                     cluster:Union[None, list[int], np.array]=None,
-                    pred_flag:bool=False) -> np.array:  # [batch, (slice), L, W]
+                    pred_flag:bool=False,
+                    random_im_mask:Union[bool, float]=False) -> np.array:  # [batch, (slice), L, W]
         # use origin -- False
         # use eval -- False
         if creator_target_category=='Default':
@@ -507,7 +509,7 @@ class CAMAgent():
             im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
             grayscale_cam, pred_category, _, _\
                 = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
-                                    im=im, out_logit=False, rescaler=rescaler)
+                                    im=im, out_logit=False, rescaler=rescaler, random=random_im_mask)
             tc_cam.append(grayscale_cam)  # tc_cam: tc_len* batch* (target_layer_aggregated)_array[groups, (depth), length, width]
                 # tc_cam: [5(tc) * [16 * [1(groups), 256, 256]]] / [5(tc) * [16 * [1(groups), depth, 256, 256]]]
         # [tc, batch, groups, (D), L, W]

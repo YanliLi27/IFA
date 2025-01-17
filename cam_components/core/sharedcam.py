@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from typing import Union
 from .activations_and_gradients import ActivationsAndGradients
 from scipy.special import softmax
 import monai
@@ -238,7 +239,8 @@ class SharedCAM:  # only return an im or a cam
                       target_layer,
                       target_category,
                       activations,
-                      grads):
+                      grads,
+                      random:Union[bool, float]=False):
         weights = self.get_cam_weights(input_tensor, target_layer,
                                        target_category, activations, grads)
         
@@ -265,9 +267,15 @@ class SharedCAM:  # only return an im or a cam
         else:
             raise ValueError(f'the length {len(input_tensor.shape)} of 3D weights is not valid')
 
-        im_weights = np.ones([B, C])
-        if self.im is not None:  # if self.im not exist, use the original
-            im_weights = self.im[target_category]  # self.im [num_classes, all_channels] - im_weights [batch_size, all_channels]
+        if random:  # im_weights - [batch, channels - the importance mask ==1or0]
+            im_weights = np.zeros([B, C])
+            for i in range(B):  # 80% be 0 == 20% be 1
+                indices = np.random.choice(C, int(C*random), replace=False)
+                im_weights[i, indices] = 1
+        else:
+            im_weights = np.ones([B, C])
+            if self.im is not None:  # if self.im not exist, use the original
+                im_weights = self.im[target_category]  # self.im [num_classes, all_channels] - im_weights [batch_size, all_channels]   
         # im_weights [batch_size, channels] 
         if len(input_tensor.shape)==4:
             im_weights = im_weights[:, :, None, None]   # [batch, im-channel, None, None] * [batch, channel, length, width]
@@ -307,7 +315,8 @@ class SharedCAM:  # only return an im or a cam
 
     def compute_cam_per_layer(self,
                               input_tensor,
-                              target_category):
+                              target_category,
+                              random:Union[bool, float]=False):
         activations_list = [a.cpu().data.numpy()
                             for a in self.activations_and_grads.activations]
         grads_list = [g.cpu().data.numpy()
@@ -324,7 +333,8 @@ class SharedCAM:  # only return an im or a cam
                                      target_layer,
                                      target_category,
                                      layer_activations,
-                                     layer_grads)
+                                     layer_grads,
+                                     random=random)
             # print('max of cam:', np.max(cam))
             # print('min of cam:', np.min(cam))
             # print('the cam from get_cam_image, should be [batch, groups=2, length, width], truth is: {}'.format(cam.shape))
@@ -346,7 +356,7 @@ class SharedCAM:  # only return an im or a cam
         # [batch, groups, depth, length, width]
 
 
-    def forward_cam(self, input_tensor, target_category=None, gt=None):
+    def forward_cam(self, input_tensor, target_category=None, gt=None, random:Union[bool, float]=False):
         if self.cuda:
             input_tensor = input_tensor.cuda()
 
@@ -364,7 +374,7 @@ class SharedCAM:  # only return an im or a cam
             loss = self.get_loss(output, target_category)
             loss.backward(retain_graph=True)
 
-        cam_per_layer = self.compute_cam_per_layer(input_tensor, target_category)
+        cam_per_layer = self.compute_cam_per_layer(input_tensor, target_category, random=random)
         # [batch, groups, depth, length, width]
         # list[target_layers*batch,(array[channel, length, width])]
         # print('cam_per_later returned to the outer item: {}'.format(np.squeeze(cam_per_layer).shape))  # (array[batch, channel, length, width]) squeeze to remove the list -- and get the [batch, channel, length, width]
@@ -407,7 +417,8 @@ class SharedCAM:  # only return an im or a cam
                  ifaoperation:bool=False,
                  im=None,
                  out_logit=False,
-                 rescaler=None
+                 rescaler=None,
+                 random:Union[bool, float]=False
                  ):
         if ifaoperation:
             return self.forward_im(input_tensor,
@@ -418,7 +429,8 @@ class SharedCAM:  # only return an im or a cam
             self.rescaler = rescaler
             return self.forward_cam(input_tensor,
                                     target_category,
-                                    gt)  # [cam, predict_category]
+                                    gt,
+                                    random=random)  # [cam, predict_category]
 
     def __del__(self):
         self.activations_and_grads.release()
