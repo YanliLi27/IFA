@@ -4,6 +4,7 @@ import os
 from scipy import stats
 from sklearn.metrics import roc_auc_score, accuracy_score
 from cam_components.metric.eval_utils import *
+from cam_components.metric.insdel import evaluate_insertion_deletion_auc
 import torch
 import torch.nn as nn
 
@@ -11,7 +12,7 @@ import torch.nn as nn
 
 class EvalAgent():
     def __init__(self, save_path:dict, eval_act:Union[bool, str]=False, creator_tc:list=[None], num_classes:int=2, groups:int=1) -> None:
-        assert eval_act in [False, 'false', 'basic', 'logit', 'corr', 'corr_logit']
+        assert eval_act in [False, 'false', 'basic', 'logit', 'corr', 'corr_logit', 'insdel', 'insdel_logit']
         # eval - corr #  以下这些需要选定一个特定的类别
         self.save_path:dict = save_path  # tc:path
         self.eval_func = eval_act
@@ -21,7 +22,7 @@ class EvalAgent():
         self.corr_cam_matrix = {}  # tc: cam_sum_value for each sample -- an array
         self.corr_pred_matrix = {}  # tc: pred_class for each sample -- an array  # 计算二值化的AUC
         self.corr_conf_matrix = {}  # tc: logit/confidence_value for each sample -- an array  # 计算
-        if eval_act in ['corr', 'logit']:
+        if eval_act in ['corr', 'corr_logit']:
             for i in range(len(creator_tc)):
                 if not isinstance(creator_tc[i], int):
                     raise AssertionError('the select category should be integers while conducting the correlation-based evaluation')
@@ -35,14 +36,21 @@ class EvalAgent():
         if eval_act in ['logit', 'basic']:
             if creator_tc[0] != None:
                 raise AssertionError('the select category should be None while conducting the blocking-based evaluation')
+            
+        # eval - insertion and deletion
+        self.insertion = {}  # [tc, int]
+        self.deletion = {}  # [tc, int]
+        if eval_act in ['insdel', 'insdel_logit']:
+            if creator_tc[0] != None:
+                raise AssertionError('the select category should be None while conducting the blocking-based evaluation')
         
         # eval - init #
         list_metrics = [self.corr_cam_matrix, self.corr_pred_matrix, self.corr_conf_matrix, 
                    self.label_gt, self.label_origin, self.label_cam, self.label_fm]
-        num_metrics = [self.increase, self.drop, self.counter]
+        num_metrics = [self.increase, self.drop, self.counter, self.insertion, self.deletion]
         for metric in list_metrics:
             for tc in creator_tc:
-                metric[str(tc)] = []
+                metric[str(tc)] = []   # [num_tc, list]
         for metric in num_metrics:
             for tc in creator_tc:
                 metric[str(tc)] = 0.0
@@ -94,6 +102,21 @@ class EvalAgent():
         single_increase = single_origin_confidence < single_cam_confidence
         self.increase[str(tc)] += single_increase.sum().item()
         self.drop[str(tc)] += single_drop.sum().item()
+
+
+    def insdeleval(self, tc, grayscale_cam:np.array, x:torch.Tensor, model:nn.Module, window:int=4):
+        # grayscale_cam: [B, G, H, W]
+        # x: [B, C, G, H, W]
+        groups:int = grayscale_cam.shape[1]
+        # images: np.ndarray [B, C, H, W]
+        # cams: np.ndarray [B, 1, H, W]
+        # model_fn: Callable, takes [B, C, H, W] and returns [B] or [B, num_classes]
+        for g in range(groups):
+            insertion, deletion = evaluate_insertion_deletion_auc(images=x[:, :, g], cams=grayscale_cam[:, g:g+1], 
+                                                                  model_fn=model, window_size=window, target_class=tc)
+            self.insertion[str(tc)] += insertion
+            self.deletion[str(tc)] += deletion
+            self.counter[str(tc)] += x.shape[0]
 
 
     def evalsummary(self, tc):  # 根据累积的数值进行计算
@@ -151,3 +174,16 @@ class EvalAgent():
             eval_borl_save_name = os.path.join(save_dir, f'eval_with_{self.eval_func}.txt')
             text_save(eval_borl_save_name, avg_increase, avg_drop, self.counter[str(tc)])
             text_save_acc(os.path.join(save_dir, 'eval_with_acc.txt'), acc_original, acc_cammasked, self.counter[str(tc)])
+        
+        elif self.eval_func in ['insdel', 'insdel_logit']:
+            print('total samples:', self.counter[str(tc)])
+            avg_insertion = self.insertion[str(tc)]/self.counter[str(tc)]
+            avg_deletion = self.deletion[str(tc)]/self.counter[str(tc)]
+
+            print('avg_insertion:', avg_insertion)
+            print('avg_deletion:', avg_deletion)
+            save_dir = self.save_path[str(tc)]
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+            eval_borl_save_name = os.path.join(save_dir, f'eval_with_{self.eval_func}.txt')
+            text_save(eval_borl_save_name, avg_insertion, avg_deletion, self.counter[str(tc)])

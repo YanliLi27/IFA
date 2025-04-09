@@ -387,11 +387,16 @@ class CAMAgent():
                 # pred_score -- [batch, 1(logit for one class)] or [batch, 1(logit for one output)]
 
                 # --------------------------------------  cam evaluate  -------------------------------------- #
+                # grayscale_cam - batch * [1(groups), 256, 256], normalized to [0-1]
+                # x tensor, origin np array, [batch, channel, groups, L, W]
+                # y tensor [batch, int]
                 if eval_act in ['corr', 'corr_logit']:
                     ea.eval(tc, rescaler.unscale(grayscale_cam), predict_category, pred_score)
                 elif eval_act in ['basic', 'logit']:
                     ea.blockeval(tc, grayscale_cam, predict_category, pred_score, nega_score, 
                                       x, y, model, device)
+                elif eval_act in ['insdel', 'insdel_logit']:
+                    ea.insdeleval(tc, grayscale_cam, )
                 # the numbers are accumulated in the attributes of self.ea
                 # --------------------------------------  cam evaluate  -------------------------------------- #
                     
