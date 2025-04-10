@@ -104,18 +104,27 @@ class EvalAgent():
         self.drop[str(tc)] += single_drop.sum().item()
 
 
-    def insdeleval(self, tc, grayscale_cam:np.array, x:torch.Tensor, model:nn.Module, window:int=4):
+    def insdeleval(self, tc, grayscale_cam:np.array, x:np.array, gt:np.array, model:nn.Module):
         # grayscale_cam: [B, G, H, W]
         # x: [B, C, G, H, W]
+        # gt: [B]
         groups:int = grayscale_cam.shape[1]
+        window:int = np.round(x.shape[-1] / 16)  # 512 /16 = 32 -> 512 / 32* 512/ 32 = 256 windows,  round (28 // 16) = 2 -> 28 / 2 * 28 / 2 = 196
         # images: np.ndarray [B, C, H, W]
         # cams: np.ndarray [B, 1, H, W]
         # model_fn: Callable, takes [B, C, H, W] and returns [B] or [B, num_classes]
-        for g in range(groups):
-            insertion, deletion = evaluate_insertion_deletion_auc(images=x[:, :, g], cams=grayscale_cam[:, g:g+1], 
-                                                                  model_fn=model, window_size=window, target_class=tc)
-            self.insertion[str(tc)] += insertion
-            self.deletion[str(tc)] += deletion
+        if len(x.shape)>4:
+            for g in range(groups):
+                insertion, deletion = evaluate_insertion_deletion_auc(images=x[:, :, g], cams=grayscale_cam[:, g:g+1], gt=gt,
+                                                                    model_fn=model, window_size=window, target_class=tc)
+                self.insertion[str(tc)] += insertion
+                self.deletion[str(tc)] += deletion
+                self.counter[str(tc)] += x.shape[0]
+        else:
+            insertion, deletion = evaluate_insertion_deletion_auc(images=x, cams=grayscale_cam[:, 0:1], gt=gt,
+                                                                model_fn=model, window_size=window, target_class=tc)
+            self.insertion[str(tc)] += sum(insertion)
+            self.deletion[str(tc)] += sum(deletion)
             self.counter[str(tc)] += x.shape[0]
 
 

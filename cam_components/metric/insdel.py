@@ -1,4 +1,8 @@
 import numpy as np
+import torch
+import numpy as np
+import torch.nn.functional as F
+
 
 def get_sorted_windows(saliency_map, window_size):
     """
@@ -27,12 +31,14 @@ def compute_auc(scores):
     return np.trapz(scores, x)
 
 def evaluate_insertion_deletion_auc(
-    images, cams, model_fn, window_size=8, steps=None, mode='both', target_class=None
+    images, cams, gt, model_fn, window_size=8, steps=None, mode='both', target_class=None,
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 ):
     """
     Args:
         images: np.ndarray [B, C, H, W]
         cams: np.ndarray [B, 1, H, W]
+        gt: np.array [B]
         model_fn: Callable, takes [B, C, H, W] and returns [B] or [B, num_classes]
         window_size: int, size of square window (e.g., 10)
         steps: int, optional, number of steps
@@ -47,8 +53,9 @@ def evaluate_insertion_deletion_auc(
     deletion_aucs = []
 
     for b in range(B):
-        image = images[b]  # [C,H,W] → [H,W,C]
+        image = images[b]  # [C,H,W]
         cam = cams[b, 0]  # [H,W]
+        gt_class = gt[b]  # int
 
         sorted_windows = get_sorted_windows(cam, window_size)
         if steps is None:
@@ -76,20 +83,24 @@ def evaluate_insertion_deletion_auc(
 
 
         if mode in ['insertion', 'both']:
-            batch_insert = np.stack(insert_images)  # [S, H, W, C]
-            batch_insert = batch_insert.transpose(0, 3, 1, 2)  # → [S, C, H, W]
-            preds = model_fn(batch_insert)  # [S] or [S, num_classes]
+            batch_insert = np.stack(insert_images)  # [S, C, H, W]
+            preds = model_fn(torch.from_numpy(batch_insert).to(device))  # [S] or [S, logits(num_classes)]
+            preds = F.softmax(preds, dim=1)  # [S, confidence(num_classes)]
             if target_class is not None:
                 preds = preds[:, target_class]
-            insertion_aucs.append(compute_auc(preds))
+            else:
+                preds = preds[:, gt_class]
+            insertion_aucs.append(compute_auc(preds.cpu().detach().numpy()))
 
         if mode in ['deletion', 'both']:
-            batch_delete = np.stack(delete_images)  # [S, H, W, C]
-            batch_delete = batch_delete.transpose(0, 3, 1, 2)
-            preds = model_fn(batch_delete)
+            batch_delete = np.stack(delete_images)  # [S, C, H, W]
+            preds = model_fn(torch.from_numpy(batch_delete).to(device)) # [S] or [S, logits(num_classes)]
+            preds = F.softmax(preds, dim=1)  # [S, confidence(num_classes)]
             if target_class is not None:
                 preds = preds[:, target_class]
-            deletion_aucs.append(compute_auc(preds))
+            else:
+                preds = preds[:, gt_class]
+            deletion_aucs.append(compute_auc(preds.cpu().detach().numpy()))
 
     return insertion_aucs, deletion_aucs  # list
 

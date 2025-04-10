@@ -8,6 +8,7 @@ import os
 def naturalimage_runner(target_category:Union[None, int, str]=None, model_flag:str='resnet',
                         task:str='CatsDogs', dataset_split:str='val',
                         max_iter=None, randomization=False, random_severity=0,
+                        mm_rm_setting:list[list[bool]]=[['norm', True], [False, True]],
                         eval_flag:str='basic', tan_flag:bool=False,
                         cam_method:Union[list, None]=None,
                         cam_save:bool=True):
@@ -47,7 +48,7 @@ def naturalimage_runner(target_category:Union[None, int, str]=None, model_flag:s
         cam_method_zoo = cam_method
     # maxmin_flag_zoo = [True, False]  # intensity scaling
     # remove_minus_flag_zoo = [False, True]  # remove the part below zero, default: True in the original Grad CAM
-    mm_rm_zoo =  [[True, False], [False, True],]
+    mm_rm_zoo =  mm_rm_setting
     im_selection_mode_zoo = ['all', 'diff_top']#, 'diff_top', 'reverse_diff_top']  # use feature selection or not -- relied on the importance matrices
 
     for method in cam_method_zoo:
@@ -128,7 +129,9 @@ def catsdog3d_runner(target_category:Union[None, int, str]=1, task:str='catsdogs
                                    cluster=None, use_origin=use_origin, max_iter=max_iter)
     
 
-def medical_runner(target_category:Union[None, int, str]=1, task:str='luna', dataset_split:str='val', cam_save:bool=True,
+def medical_runner(target_category:Union[None, int, str]=1, task:str='luna', dataset_split:str='val', 
+                   mm_rm_setting:list[list[bool]]=[['norm', True], [False, True]],
+                   cam_save:bool=True,
                    eval_flag:str='basic'):
     # -------------------------------- optional: -------------------------------- #
     batch_size:int=16
@@ -161,7 +164,7 @@ def medical_runner(target_category:Union[None, int, str]=1, task:str='luna', dat
         cam_method_zoo = ['fullcam', 'gradcam', 'gradcampp', 'xgradcam']
         # maxmin_flag_zoo = [True, False]  # intensity scaling
         # remove_minus_flag_zoo = [False, True]  # remove the part below zero, default: True in the original Grad CAM
-        mm_rm_zoo =  [['norm', False], [None, True]]
+        mm_rm_zoo =  mm_rm_setting
         im_selection_mode_zoo = ['all', 'diff_top']  # use feature selection or not -- relied on the importance matrices
 
         for method in cam_method_zoo:
@@ -186,6 +189,7 @@ def medical_runner(target_category:Union[None, int, str]=1, task:str='luna', dat
 
 def esmira_runner(target_category:Union[None, int, str]=1, data_dir:str='D:\\ESMIRA\\ESMIRA_common',
                 target_catename:list=['EAC','ATL'], target_site:list=['Wrist'], target_dirc:list=['TRA', 'COR'],
+                mm_rm_setting:list[list[bool]]=[['norm', True], [False, True]],
                 cam_save:bool=True, eval_flag:str='basic'):
     # -------------------------------- optional: -------------------------------- #
     batch_size:int=5
@@ -230,7 +234,7 @@ def esmira_runner(target_category:Union[None, int, str]=1, data_dir:str='D:\\ESM
         cam_method_zoo = ['gradcam', 'fullcam', 'gradcampp', 'xgradcam']
         # maxmin_flag_zoo = [True, False]  # intensity scaling
         # remove_minus_flag_zoo = [False, True]  # remove the part below zero, default: True in the original Grad CAM
-        mm_rm_zoo =  [['tanh', False], [None, True]]
+        mm_rm_zoo =  mm_rm_setting
         im_selection_mode_zoo = ['all', 'diff_top']  # use feature selection or not -- relied on the importance matrices
 
         for method in cam_method_zoo:
