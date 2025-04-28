@@ -109,7 +109,7 @@ class EvalAgent():
         # x: [B, C, G, H, W]
         # gt: [B]
         groups:int = grayscale_cam.shape[1]
-        window:int = np.round(x.shape[-1] / 16)  # 512 /16 = 32 -> 512 / 32* 512/ 32 = 256 windows,  round (28 // 16) = 2 -> 28 / 2 * 28 / 2 = 196
+        window:int = int(np.round(x.shape[-1] / 8))  # 512 /8 = 64 -> 512 / 64* 512/ 64 = 64 windows,  round (28 // 16) = 2 -> 28 / 2 * 28 / 2 = 196
         # images: np.ndarray [B, C, H, W]
         # cams: np.ndarray [B, 1, H, W]
         # model_fn: Callable, takes [B, C, H, W] and returns [B] or [B, num_classes]

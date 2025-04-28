@@ -397,7 +397,7 @@ class CAMAgent():
                                       x, y, model, device)
                 elif eval_act in ['insdel', 'insdel_logit']:
                     # MNIST origin [batch, channel, H, W], grayscale_cam [batch, group, H, W], tc=None
-                    ea.insdeleval(tc, grayscale_cam, origin, gt=predict_category, model=model, window=4)
+                    ea.insdeleval(tc, grayscale_cam, origin, gt=predict_category, model=model)
                 # the numbers are accumulated in the attributes of self.ea
                 # --------------------------------------  cam evaluate  -------------------------------------- #
                     

@@ -74,7 +74,7 @@ def evaluate_insertion_deletion_auc(
         for step in range(steps):
             h0, h1, w0, w1 = sorted_windows[step]
             cur_insert[:, h0:h1, w0:w1] = image[:, h0:h1, w0:w1]
-            cur_delete[h0:h1, w0:w1, :] = 0
+            cur_delete[:, h0:h1, w0:w1] = 0
 
             if mode in ['insertion', 'both']:
                 insert_images.append(cur_insert.copy())
