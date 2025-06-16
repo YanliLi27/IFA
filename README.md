@@ -108,6 +108,7 @@ x_batch, y_batch = x_batch.cpu().numpy(), y_batch.cpu().numpy()
 <summary><b><big>Step 2. Create an agent for normalize the CAM</big></b></summary>
 The second step is to create an agent to analyze the CAMs across the dataset and normalize the then generated CAMs.
 > For output, you need a name of your task `your_task'.
+
 ```python
 your_task:str = 'Example'  # name of the task 
 agent = CAMAgent(model,   # your model
@@ -134,6 +135,7 @@ agent = CAMAgent(model,   # your model
 <details>
 <summary><b><big>App 1. Create a single normalized CAM</big></b></summary>
 To create a single normalized CAM first extend it to shape of 2D [batch, 1, L, W] / 3D [batch, 1, H, L, W].
+
 ```python
 x_batch, y_batch = iter(test_loader).next()
 x_batch, y_batch = x_batch.cpu().numpy(), y_batch.cpu().numpy()
@@ -150,6 +152,7 @@ indiv_cam = Agent.indiv_return(x_indiv, select_category)
 <details>
 <summary><b><big>App 2. Create a series of normalized CAMs</big></b></summary>
 To create a normalized CAM first extend it to shape of 2D [batch, 1, L, W] / 3D [batch, 1, H, L, W].
+
 ```python
 Agent.creator_main(dataset,   # your dataset, optional - None = use dataset while initialization
                    [categories],    # select the categories
@@ -163,12 +166,12 @@ Agent.creator_main(dataset,   # your dataset, optional - None = use dataset whil
 </details>
 
 <details>
-Afterward analysis
+<summary><b><big>Afterward analysis</big></b></summary>
 > For feature analysis results, you can find the importance matrices in 'output/`your_task'/im'.
 </details>
 
 <details>
-Extension:
+<summary><b><big>Extension</big></b></summary>
 1. Examples
 main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 > Find them in the ./runner.
