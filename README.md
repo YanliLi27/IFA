@@ -10,7 +10,7 @@
 
 ## Initial idea:
 <p align="center">
-  <img width="350" src="https://github.com/YanliLi27/IFA/blob/main/example.jpg" alt="ExampleIFA">
+  <img width="650" src="https://github.com/YanliLi27/IFA/blob/main/example.jpg" alt="ExampleIFA">
 </p>
 
 [Shortcut to arxiv draft](https://arxiv.org/abs/2407.01142)
