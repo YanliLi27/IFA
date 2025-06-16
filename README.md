@@ -33,7 +33,7 @@ The purpose of this library is to provide a method that normalizes saliency maps
 
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
-The code structure of this library includes:
+<li>The code structure of this library includes:</li>
 > Core function:
   <details>
   <summary><b><big>cam_components</big></b></summary>
@@ -72,17 +72,12 @@ The code structure of this library includes:
 
 <details>
 <summary><b><big>Metrics</big></b></summary>
-
+<li>Four metrics are included in this library:</li>
+> Average increase and drop (decrease)
+> Insertion and deletion
+> Correlation coefficients with model's outputs
+> Perturbation (on the features) for feature-wise saliency.
 </details>
-
-
-
-<details>
-<summary><b><big>Datasets (evaluated in the paper)</big></b></summary>
-
-</details>
-
-
 
 
 ## Installation
