@@ -34,31 +34,31 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
 The code structure of this library.
-  <details>
-  <summary><b><big>cam_components</big></b></summary>
-  the folder `cam_components` contains the core functionality of this method with the following structure:
-    <li>camagent.py: the agent to coordinate other components.</li>
-    <li>core: gradient calculation`activations_and_gradients.py`, feature selection`feature_selection.py`, shared CAM framework`sharedcam.py`, rescaler `rescale.py`.</li>
-    <li>agent:</li>
-    <li>image:</li>
-    <li>methods:</li>
-    <li>metric:</li>
-    <li>preparation:</li>
-    <li>utils:</li>
-  </details>
+    <details>
+    <summary><b><big>cam_components</big></b></summary>
+    the folder `cam_components` contains the core functionality of this method with the following structure:
+      <li>camagent.py: the agent to coordinate other components.</li>
+      <li>core: gradient calculation`activations_and_gradients.py`, feature selection`feature_selection.py`, shared CAM framework`sharedcam.py`, rescaler `rescale.py`.</li>
+      <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
+      <li>image: creating `image_artist.py`</li>
+      <li>methods:</li>
+      <li>metric:</li>
+      <li>preparation:</li>
+      <li>utils:</li>
+    </details>
 
-  <details>
-  <summary><b><big>cam_components</big></b></summary>
-  the folder `cam_components` contains the core functionality of this method with the following structure:
-    > camagent.py: the 
-    > core:
-    > agent:
-    > image:
-    > methods:
-    > metric:
-    > preparation:
-    > utils:
-  </details>
+    <details>
+    <summary><b><big>cam_components</big></b></summary>
+    the folder `cam_components` contains the core functionality of this method with the following structure:
+      > camagent.py: the 
+      > core:
+      > agent:
+      > image:
+      > methods:
+      > metric:
+      > preparation:
+      > utils:
+    </details>
 </details>
 
 
