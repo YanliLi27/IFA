@@ -113,11 +113,10 @@ your_task:str = 'Example'  # name of the task
 agent = CAMAgent(model,   # your model
                  target_layer,  # the layer/layers for obtaining heatmaps
                  dataset,  # Dataset, not Dataloader
-  
                  # The following attributes are typically default
                  groups=1,  # if group conv in your model
                  ram=False,  # for regression tasks, regression activation mapping
-                 cam_method='fullcam',  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ] more in './cam_components/methods/*cam.py'
+                 cam_method='fullcam',  # ['gradcam', , 'fullcam', 'gradcampp', 'xgradcam', ... ]
                  name_str=f'{your_task}',  # output name: './output/*namestr*/im'
                  batch_size=batch_size,  # for acceleration
                  select_category=select_category,  # default to be 0, the target category in your task
@@ -130,6 +129,7 @@ agent = CAMAgent(model,   # your model
 
 ```
 </details>
+
 
 <details>
 <summary><b><big>App 1. Create a single normalized CAM</big></b></summary>
@@ -163,22 +163,22 @@ Agent.creator_main(dataset,   # your dataset, optional - None = use dataset whil
 </details>
 
 <details>
-### Afterward analysis
-For feature analysis results, you can find the importance matrices in 'output/`your_task'/im'.
+Afterward analysis
+> For feature analysis results, you can find the importance matrices in 'output/`your_task'/im'.
 </details>
 
 <details>
-### Extension:
-#### 1. Examples
+Extension:
+1. Examples
 main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 > Find them in the ./runner.
 > In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 
-#### 2. **Add more CAM methods, please see the './cam_components/methods/*cam.py'**
+2. **Add more CAM methods, please see the './cam_components/methods/*cam.py'**
 
-#### 3. **Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'**
+3. **Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'**
 
-#### 4. For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
+4. For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
 > Importance matrices for features: './output/*namestr*/im'
 > Saved heatmaps: './output/*namestr*/cam'
 > Metrics of evalution: './output/*namestr*/figs'
