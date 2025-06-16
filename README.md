@@ -34,32 +34,27 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
 The code structure of this library includes:
-> cam_components:
     <details>
     <summary><b><big>cam_components</big></b></summary>
-    the folder <pre><code>cam_components</code></pre> contains the core functionality of this method with the following structure:
+    the folder `cam_components` contains the core functionality of this method with the following structure:
       <li>camagent.py: the agent to coordinate other components.</li>
-      <li>core: gradient calculation <pre><code>activations_and_gradients.pys</code></pre>, feature selection <pre><code>feature_selection.py`, shared CAM framework <pre><code>sharedcam.py`, rescaler  <pre><code>rescale.py`.</li>
-      <li>agent: calculate the importance matrix factors <pre><code>target_cam_calculation.py`, load and save importance matrix <pre><code>im_func.py`</li>
-      <li>image: creating <pre><code>image_artist.py`</li>
-      <li>methods:</li>
-      <li>metric:</li>
-      <li>preparation:</li>
-      <li>utils:</li>
+      <li>core: gradient calculation `activations_and_gradients.py`, feature selection `feature_selection.py`, shared core CAM framework `sharedcam.py`, rescaler  `rescale.py`.</li>
+      <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
+      <li>image: the function that normalize saliency maps `image_artist.py`</li>
+      <li>methods: a library of different CAM algorithms </li>
+      <li>metric: a series of metrics used for evaluatation </li>
+      <li>preparation: dataset scan to calculate upper and lower limit `analyzer_util`, model output channel calculation `model_out_reader.py`, model weights randomization `model_random.py`, save name `name_finder.py` </li>
+      <li>utils: reshape the tranformers' output to original image shape </li>
     </details>
         
-> predefined
     <details>
-    <summary><b><big>cam_components</big></b></summary>
-    the folder contains the core functionality of this method with the following structure:
-      > camagent.py: the 
-      > core:
-      > agent:
-      > image:
-      > methods:
-      > metric:
-      > preparation:
-      > utils:
+    <summary><b><big>predefined</big></b></summary>
+    the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
+    </details>
+
+    <details>
+    <summary><b><big>predefined</big></b></summary>
+    the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
     </details>
 </details>
 
@@ -144,7 +139,7 @@ x_batch, y_batch = x_batch.cpu().numpy(), y_batch.cpu().numpy()
 <details>
 <summary><b><big>Step 2. Create an agent for normalize the CAM</big></b></summary>
 The second step is to create an agent to analyze the CAMs across the dataset and normalize the then generated CAMs.
-> For output, you need a name of your task <pre><code>your_task<code><pre>.
+> For output, you need a name of your task `your_task`.
 
 ```python
 your_task:str = 'Example'  # name of the task 
