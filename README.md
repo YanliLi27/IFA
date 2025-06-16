@@ -10,7 +10,7 @@
 
 ## Initial idea:
 <p align="center">
-  <img width="350" src="[/Quantus/main/quantus_logo.png](https://github.com/YanliLi27/IFA/blob/main/example.jpg)">
+  <img width="350" src="[ExampleIFA](https://github.com/YanliLi27/IFA/blob/main/example.jpg)">
 </p>
 
 [Shortcut to arxiv draft](https://arxiv.org/abs/2407.01142)
@@ -20,6 +20,7 @@
 * [Library overview](#library-overview)
 * [Installation](#installation)
 * [Getting started](#getting-started)
+* [Extension guidance](#extension)
 * [Tutorials](#tutorials) (under construction)
 
 
@@ -64,10 +65,6 @@ SimpleITK==2.3.1   # for medical datasets
 ```
 
 ## Getting started
-###
-
-
-## Tutorials:
 The following will give a short introduction to how to get started with the CAM feature analysis. The required materials needed:
 > A model (model), inputs (x_batch), labels (y_batch)
 > Customized CAM algorithm, if not you can use the classical algorithms embedded.
@@ -166,28 +163,36 @@ Agent.creator_main(dataset,   # your dataset, optional - None = use dataset whil
 </details>
 
 <details>
-<summary><b><big>Afterward analysis</big></b></summary>
-> For feature analysis results, you can find the importance matrices in 'output/`your_task'/im'.
-</details>
-
-<details>
-<summary><b><big>Extension</big></b></summary>
-1. Examples
-main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
-> Find them in the ./runner.
-> In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
-
-2. **Add more CAM methods, please see the './cam_components/methods/*cam.py'**
-
-3. **Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'**
-
-4. For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
+<summary><b><big>Output location</big></b></summary>
+For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
 > Importance matrices for features: './output/*namestr*/im'
 > Saved heatmaps: './output/*namestr*/cam'
 > Metrics of evalution: './output/*namestr*/figs'
+
+
+
+## Extension guidance
+
+<details>
+<summary><b><big>Examples</big></b></summary>
+main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
+> Find them in the ./runner.
+> In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 </details>
 
-## Citation
+
+<details>
+<summary><b><big>Customize CAM algorithm</big></b></summary>
+> Add more CAM methods, please see the './cam_components/methods/*cam.py'
+</details>
+
+<details>
+<summary><b><big>Customize evaluation</big></b></summary>
+> Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'
+</details>
+
+
+### Citation
 > for cite this repositry, please cite: Integrated feature analysis for deep learning interpretation and class activation maps, arxiv.org/abs/2407.01142
 
 ### The CAMs for signal processing were also included, 
