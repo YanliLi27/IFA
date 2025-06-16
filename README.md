@@ -37,14 +37,14 @@ The code structure of this library.
   <details>
   <summary><b><big>cam_components</big></b></summary>
   the folder `cam_components` contains the core functionality of this method with the following structure:
-    > camagent.py: the agent to coordinate other components.
-    > core: gradient calculation`activations_and_gradients.py`, feature selection`feature_selection.py`, shared CAM framework`sharedcam.py`, rescaler `rescale.py`.
-    > agent:
-    > image:
-    > methods:
-    > metric:
-    > preparation:
-    > utils:
+    <li>camagent.py: the agent to coordinate other components.</li>
+    <li>core: gradient calculation`activations_and_gradients.py`, feature selection`feature_selection.py`, shared CAM framework`sharedcam.py`, rescaler `rescale.py`.</li>
+    <li>agent:</li>
+    <li>image:</li>
+    <li>methods:</li>
+    <li>metric:</li>
+    <li>preparation:</li>
+    <li>utils:</li>
   </details>
 
   <details>
