@@ -33,23 +33,25 @@ The purpose of this library is to provide a method that normalizes saliency maps
 
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
-The code structure of this library.
+The code structure of this library includes:
+> cam_components:
     <details>
     <summary><b><big>cam_components</big></b></summary>
-    the folder `cam_components` contains the core functionality of this method with the following structure:
+    the folder <pre><code>cam_components</code></pre> contains the core functionality of this method with the following structure:
       <li>camagent.py: the agent to coordinate other components.</li>
-      <li>core: gradient calculation`activations_and_gradients.py`, feature selection`feature_selection.py`, shared CAM framework`sharedcam.py`, rescaler `rescale.py`.</li>
-      <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
-      <li>image: creating `image_artist.py`</li>
+      <li>core: gradient calculation <pre><code>activations_and_gradients.pys</code></pre>, feature selection <pre><code>feature_selection.py`, shared CAM framework <pre><code>sharedcam.py`, rescaler  <pre><code>rescale.py`.</li>
+      <li>agent: calculate the importance matrix factors <pre><code>target_cam_calculation.py`, load and save importance matrix <pre><code>im_func.py`</li>
+      <li>image: creating <pre><code>image_artist.py`</li>
       <li>methods:</li>
       <li>metric:</li>
       <li>preparation:</li>
       <li>utils:</li>
     </details>
-
+        
+> predefined
     <details>
     <summary><b><big>cam_components</big></b></summary>
-    the folder `cam_components` contains the core functionality of this method with the following structure:
+    the folder contains the core functionality of this method with the following structure:
       > camagent.py: the 
       > core:
       > agent:
@@ -61,6 +63,7 @@ The code structure of this library.
     </details>
 </details>
 
+> runner
 
 <details>
 <summary><b><big>Metrics</big></b></summary>
@@ -141,7 +144,7 @@ x_batch, y_batch = x_batch.cpu().numpy(), y_batch.cpu().numpy()
 <details>
 <summary><b><big>Step 2. Create an agent for normalize the CAM</big></b></summary>
 The second step is to create an agent to analyze the CAMs across the dataset and normalize the then generated CAMs.
-> For output, you need a name of your task `your_task'.
+> For output, you need a name of your task <pre><code>your_task<code><pre>.
 
 ```python
 your_task:str = 'Example'  # name of the task 
