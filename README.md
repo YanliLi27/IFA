@@ -168,7 +168,7 @@ For the output, you can create a dir named output for collection, the default is
 > Importance matrices for features: './output/*namestr*/im'
 > Saved heatmaps: './output/*namestr*/cam'
 > Metrics of evalution: './output/*namestr*/figs'
-
+</details>
 
 
 ## Extension guidance
