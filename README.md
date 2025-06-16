@@ -80,13 +80,14 @@ The purpose of this library is to provide a method that normalizes saliency maps
 
 
 ## Installation
-> **For simplest installation**
-### ctrl+c/v the <b>cam_components<b> in the file to your project
-> Normali installation
+> Normal installation
 Download the files, and run:
 ```bash
 python setup.py install
 ```
+> **For simplest installation if the requirement already satisfied**
+> ctrl+c/v the <b>cam_components<b> in the file to your project
+
 
 ### Package requirements
 ```
