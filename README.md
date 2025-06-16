@@ -34,7 +34,6 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
 <li>The code structure of this library includes:</li>
-> Core function:
   <details>
   <summary><b><big>cam_components</big></b></summary>
   the folder `cam_components` contains the core functionality of this method with the following structure:
