@@ -12,7 +12,7 @@
 > **For simple use**
 ### Step1: Setup the module: cam_components into your project.
 ```bash
-python ifasetup.py install
+python setup.py install
 ```
 
 ### Step2: Set your model, dataset and the target object (category)
