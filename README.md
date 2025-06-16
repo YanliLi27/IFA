@@ -34,31 +34,41 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
 The code structure of this library includes:
-    <details>
-    <summary><b><big>cam_components</big></b></summary>
-    the folder `cam_components` contains the core functionality of this method with the following structure:
-      <li>camagent.py: the agent to coordinate other components.</li>
-      <li>core: gradient calculation `activations_and_gradients.py`, feature selection `feature_selection.py`, shared core CAM framework `sharedcam.py`, rescaler  `rescale.py`.</li>
-      <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
-      <li>image: the function that normalize saliency maps `image_artist.py`</li>
-      <li>methods: a library of different CAM algorithms </li>
-      <li>metric: a series of metrics used for evaluatation </li>
-      <li>preparation: dataset scan to calculate upper and lower limit `analyzer_util`, model output channel calculation `model_out_reader.py`, model weights randomization `model_random.py`, save name `name_finder.py` </li>
-      <li>utils: reshape the tranformers' output to original image shape </li>
-    </details>
-        
-    <details>
-    <summary><b><big>predefined</big></b></summary>
-    the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
-    </details>
+> Core function:
+  <details>
+  <summary><b><big>cam_components</big></b></summary>
+  the folder `cam_components` contains the core functionality of this method with the following structure:
+    <li>camagent.py: the agent to coordinate other components.</li>
+    <li>core: gradient calculation `activations_and_gradients.py`, feature selection `feature_selection.py`, shared core CAM framework `sharedcam.py`, rescaler  `rescale.py`.</li>
+    <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
+    <li>image: the function that normalize saliency maps `image_artist.py`</li>
+    <li>methods: a library of different CAM algorithms </li>
+    <li>metric: a series of metrics used for evaluatation </li>
+    <li>preparation: dataset scan to calculate upper and lower limit `analyzer_util`, model output channel calculation `model_out_reader.py`, model weights randomization `model_random.py`, save name `name_finder.py` </li>
+    <li>utils: reshape the tranformers' output to original image shape </li>
+  </details>
+  
+> Model and data for predefined examples:
+  <details>
+  <summary><b><big>predefined</big></b></summary>
+  the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
+  </details>
+  
+> Runner for predefined examples:
+  <details>
+  <summary><b><big>runner</big></b></summary>
+  the folder contains the runner used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
+  </details>
+  
+> Other utils:
+  <details>
+  <summary><b><big>otherutils/visual_components</big></b></summary>
+  the folder contains the code used for random feature selection and other experiment utils.
+  </details>
 
-    <details>
-    <summary><b><big>predefined</big></b></summary>
-    the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
-    </details>
 </details>
 
-> runner
+
 
 <details>
 <summary><b><big>Metrics</big></b></summary>
