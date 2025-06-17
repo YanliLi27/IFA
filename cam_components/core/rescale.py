@@ -1,9 +1,10 @@
 import numpy as np
-from typing import Union
+from typing import Union, Literal
 
 class Rescaler():
     def __init__(self, value_max:Union[None, float]=None, value_min:Union[None, float]=None, 
-                 remove_minus_flag:bool=False, t_max:float=0.95, t_min:float=0.05, rescale_func:str='norm',
+                 remove_minus_flag:bool=False, t_max:float=0.95, t_min:float=0.05, 
+                 rescale_func:Literal['norm', 'tanh', 'norm_multi', 'tanh_multi', None, False]='norm',
                  scale_ratio:float=1.5):
         self.value_max = value_max * scale_ratio if value_max else None
         self.value_min = value_min * scale_ratio if value_min else None
@@ -38,6 +39,7 @@ class Rescaler():
     
 
     def _tanh_unscale(self, img):
+        assert self.para_k is not None
         return (np.arctanh(img+1e-10) - self.para_b)/(self.para_k + 1e-10)
 
         

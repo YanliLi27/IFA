@@ -56,7 +56,7 @@ class EvalAgent():
                 metric[str(tc)] = 0.0
 
 
-    def eval(self, tc, grayscale_cam:np.array, predict_category, pred_score):
+    def eval(self, tc, grayscale_cam:np.ndarray, predict_category, pred_score):
         # 3d grayscale cam -- 16 * [1, 5, 256, 256] - batch * [1, 5, 256, 256]
         # batch_size * [group_num, (z,) y, x]
         for i, single_cam in enumerate(grayscale_cam):  # 取单个进行计算和存储
@@ -67,7 +67,7 @@ class EvalAgent():
             self.counter[str(tc)] += 1
     
 
-    def blockeval(self, tc, grayscale_cam:np.array, predict_category, pred_score, nega_score, 
+    def blockeval(self, tc, grayscale_cam:np.ndarray, predict_category, pred_score, nega_score, 
                   x:torch.Tensor, y:torch.Tensor, model:nn.Module,
                   device=torch.device("cuda" if torch.cuda.is_available() else "cpu")):
         # choose from one: cam_regularizer or cam_regularizer_binary
@@ -104,7 +104,7 @@ class EvalAgent():
         self.drop[str(tc)] += single_drop.sum().item()
 
 
-    def insdeleval(self, tc, grayscale_cam:np.array, x:np.array, gt:np.array, model:nn.Module):
+    def insdeleval(self, tc, grayscale_cam:np.ndarray, x:np.ndarray, gt:np.ndarray, model:nn.Module):
         # grayscale_cam: [B, G, H, W]
         # x: [B, C, G, H, W]
         # gt: [B]

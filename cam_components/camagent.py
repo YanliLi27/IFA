@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 class CAMAgent():
     def __init__(self,
-                model, target_layer, dataset:Union[DataLoader, np.array],  
+                model, target_layer, dataset:Union[DataLoader, np.ndarray],  
                 groups:int=1, ram:bool=False,
                 # ---------------- model and dataset -------------#
                 cam_method:str='gradcam', 
@@ -148,8 +148,8 @@ class CAMAgent():
                 self.im[str(tc)], self.value_max[str(tc)], self.value_min[str(tc)] = self._get_importances(im_path, tc)
 
             if 'multi' in self.rescale:
-                value_max = max(self.value_max.values)
-                value_min = min(self.value_min.values)
+                value_max = max(self.value_max.values())
+                value_min = min(self.value_min.values())
                 self.rescaler['uniform'] = Rescaler(value_max=value_max, value_min=value_min, remove_minus_flag=self.rm,
                                                      rescale_func=rescale, scale_ratio=scale_ratio)
             else:
@@ -309,7 +309,7 @@ class CAMAgent():
                     # if wanted to target a category while the analyzer using None
                     eval_act:Union[bool, str]=False,
                     cam_save:bool=True, 
-                    cluster:Union[None, list[int], np.array]=None,  # 同一个cluster的放到一个nii里面
+                    cluster:Union[None, list[int], np.ndarray]=None,  # 同一个cluster的放到一个nii里面
                     use_origin:bool=True,  # for overlay/or not
                     max_iter:Union[None, int]=None,
                     random_im_mask:bool=False
@@ -333,6 +333,7 @@ class CAMAgent():
         if eval_act is not False:
             ea  = EvalAgent(save_path=self.record_dir, eval_act=eval_act, creator_tc=creator_tc, 
                             num_classes=self.num_classes, groups=self.groups)
+            assert isinstance(eval_act, str)
             logit_flag = True if ('logit' in eval_act) else False
         else:
             logit_flag = False
@@ -424,7 +425,7 @@ class CAMAgent():
                     tc_cam = np.transpose(np.asarray(tc_cam), (1, 2, 0, 3))   # [batch, groups, tc, W]
                 # 如果集成就合并一下，如果不就挨个生成CAM
                 if cluster and (max(cluster)>1):  # width-prior, merge cams required
-                    camshape = tc_cam.shape
+                    camshape:list = list(tc_cam.shape)
                     camshape[2] = len(cluster)
                     clustercam = np.zeros(camshape)
                     clusterpredca = np.zeros((cluster))
@@ -479,9 +480,9 @@ class CAMAgent():
             
     def indiv_return(self, x:torch.Tensor,  # make sure the input is a 4-dimension tensor
                     creator_target_category:Union[None, str, int, list]='Default',
-                    cluster:Union[None, list[int], np.array]=None,
+                    cluster:Union[None, list[int], np.ndarray]=None,
                     pred_flag:bool=False,
-                    random_im_mask:Union[bool, float]=False) -> np.array:  # [batch, (slice), L, W]
+                    random_im_mask:Union[bool, float]=False):  # [batch, (slice), L, W]
         # use origin -- False
         # use eval -- False
         if creator_target_category=='Default':
@@ -528,7 +529,7 @@ class CAMAgent():
             tc_cam = np.transpose(tc_cam, (1, 2, 0, 3))   # [batch, groups, tc, W]
         # [batch, groups, tc, (D), L, W]
         if cluster and (max(cluster)>1):  # width-prior, merge cams required
-            camshape = tc_cam.shape
+            camshape:list = list(tc_cam.shape)
             camshape[2] = len(cluster)
             clustercam = np.zeros(camshape)
             cluster_counter = 0 

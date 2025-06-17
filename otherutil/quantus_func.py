@@ -1,16 +1,6 @@
-from quantus import FaithfulnessCorrelation, AOPC, SensitivityN, Robustness, MaxSensitivity, Continuity, Sparsity, Stability
-from typing import Literal 
+from quantus import FaithfulnessCorrelation, SensitivityN, MaxSensitivity, Continuity, Selectivity, RelativeInputStability
+from typing import Any, Literal 
 from ..cam_components import CAMAgent
-
-
-def saliency_callable(model, inputs, targets, **kwargs):
-    return explaination(model, inputs, targets)
-
-
-
-
-
-
 
 
 class WorkSpace:
@@ -19,26 +9,30 @@ class WorkSpace:
                        ):
         # initialize agent, dataset, model at here
         # call different quantus_calculation for different purposes of evaluation
-        model, target_layer, dataset,groups, ram = task_generator()
-        self.name_str = f'{task}_{method}'
+        model, target_layer, dataset,groups, ram, cam_type = task_generator()
+        self.name_str = f'{task}_{method}'  # for metric need another name
 
-        Agent = CAMAgent(model, target_layer, dataset,  
+        self.agent = CAMAgent(model, target_layer, dataset,  
                                 groups, ram,
                                 # optional:
-                                cam_method=method, name_str=f'esmira_{fold_order}',# cam method and im paths and cam output
-                                batch_size=batch_size, select_category=1,  # info of the running process
-                                rescale=mm,  remove_minus_flag=rm, scale_ratio=2,
-                                feature_selection=im, feature_selection_ratio=im_selection_extra,  # feature selection
+                                cam_method=method, name_str=f'{self.name_str}',# cam method and im paths and cam output
+                                batch_size=1, select_category=1,  # info of the running process
+                                rescale='norm',  remove_minus_flag=False, scale_ratio=2,
+                                feature_selection='all', feature_selection_ratio=1.,  # feature selection
                                 randomization=None,  # model randomization for sanity check
-                                use_pred=use_pred,
+                                use_pred=False,
                                 rescaler=None,  # outer scaler
-                                cam_type='3D'  # output 2D or 3D
+                                cam_type=cam_type  # output 2D or 3D
                                 )
         
-        self.build_callable_saliency(Agent)
+        self.agent.indiv_return(x) # make sure the input is a 4-dimension tensor [batch, channel, W, H]
+        
         
         self.score_to_be_calculate:list[str] = []
-        self.score_dict:dict[str:float] = {}
+        self.score_dict:dict = {}
+
+    def _build_callable_saliency(self, Agent):
+        pass
 
 
     def quantus_calculation(self, metric_name:Literal['faith', 'sensitivity'], name_str:str=''):
