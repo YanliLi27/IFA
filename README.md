@@ -72,10 +72,10 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Metrics</big></b></summary>
 <li>Four metrics are included in this library:</li>
-> Average increase and drop (decrease)
-> Insertion and deletion
-> Correlation coefficients with model's outputs
-> Perturbation (on the features) for feature-wise saliency.
+<li>> Average increase and drop (decrease).</li>
+<li>> Insertion and deletion.</li>
+<li>> Correlation coefficients with model's outputs.</li>
+<li>> Perturbation (on the features) for feature-wise saliency.</li>
 </details>
 
 
