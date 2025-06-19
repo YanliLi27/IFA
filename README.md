@@ -151,6 +151,7 @@ x_batch, y_batch = x_batch.cpu().numpy(), y_batch.cpu().numpy()
 
 <details>
 <summary><b><big>Step 2. Create an agent for normalize the CAM</big></b></summary>
+
 The second step is to create an agent to analyze the CAMs across the dataset and normalize the then generated CAMs.
 > For output, you need a name of your task `your_task`.
 
@@ -212,10 +213,11 @@ Agent.creator_main(dataset,   # your dataset, optional - None = use dataset whil
 
 <details>
 <summary><b><big>Output location</big></b></summary>
-For the output, you can create a dir named output for collection, the default is './output/*namestr*/im&cam&figs'.
-> Importance matrices for features: './output/*namestr*/im'
-> Saved heatmaps: './output/*namestr*/cam'
-> Metrics of evalution: './output/*namestr*/figs'
+
+For the output, you can create a dir named output for collection, the default is `./output/*namestr*/im&cam&figs`.
+> Importance matrices for features: `./output/*namestr*/im`
+> Saved heatmaps: `./output/*namestr*/cam`
+> Metrics of evalution: `./output/*namestr*/figs`
 </details>
 
 
@@ -223,20 +225,25 @@ For the output, you can create a dir named output for collection, the default is
 
 <details>
 <summary><b><big>Examples</big></b></summary>
+
 main.py provides some examples of runners, with some predefined tasks and datasets that were presented in the manuscript.
 > Find them in the ./runner.
-> In main.py, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
+> In `main.py`, examples were given for generating CAMs of MNIST, ILSVRC2012, Cats&Dogs and other four medical image tasks with the default paths.
 </details>
 
 
 <details>
 <summary><b><big>Customize CAM algorithm</big></b></summary>
-> Add more CAM methods, please see the './cam_components/methods/*cam.py'
+
+> Add more CAM methods, please see the `./cam_components/methods/*cam.py`
+
 </details>
 
 <details>
 <summary><b><big>Customize evaluation</big></b></summary>
-> Change the functions for importance matrices and evaluation, see './cam_components/metric/*.py'
+
+> Change the functions for importance matrices and evaluation, see `./cam_components/metric/*.py`
+
 </details>
 
 
