@@ -1,4 +1,4 @@
-# Feature analysis for proper intensity scaling and feature distinction in class activation maps (16/06/2025 updated)
+# Feature analysis for proper intensity scaling and feature distinction in class activation maps (06/2025 updated)
 </p>
 <!--<h1 align="center"><b>Quantus</b></h1>-->
 <h3 align="center"><b>A pytorch package to calculate the normalized CAMs and analyze datasets based on trained models</b></h3>
@@ -34,9 +34,14 @@ The purpose of this library is to provide a method that normalizes saliency maps
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
 <li>The code structure of this library includes:</li>
+
+  > Core functions:
+
   <details>
   <summary><b><big>cam_components</big></b></summary>
-  the folder `cam_components` contains the core functionality of this method with the following structure:
+
+    The folder `cam_components` contains the core functionality of this method with the following structure:
+
     <li>camagent.py: the agent to coordinate other components.</li>
     <li>core: gradient calculation `activations_and_gradients.py`, feature selection `feature_selection.py`, shared core CAM framework `sharedcam.py`, rescaler  `rescale.py`.</li>
     <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
@@ -47,19 +52,19 @@ The purpose of this library is to provide a method that normalizes saliency maps
     <li>utils: reshape the tranformers' output to original image shape </li>
   </details>
   
-> Model and data for predefined examples:
+  > Model and data for predefined examples:
   <details>
   <summary><b><big>predefined</big></b></summary>
   the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
   </details>
   
-> Runner for predefined examples:
+  > Runner for predefined examples:
   <details>
   <summary><b><big>runner</big></b></summary>
   the folder contains the runner used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
   </details>
   
-> Other utils:
+  > Other utils:
   <details>
   <summary><b><big>otherutils/visual_components</big></b></summary>
   the folder contains the code used for random feature selection and other experiment utils.

@@ -4,14 +4,17 @@ from ..cam_components import CAMAgent
 
 
 class WorkSpace:
-    def __init__(self, method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam'],
-                       task:Literal['Imagenet'],
+    def __init__(self, task:Literal['Imagenet'],
+                       method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam'],
+                       
                        ):
-        # initialize agent, dataset, model at here
         # call different quantus_calculation for different purposes of evaluation
-        model, target_layer, dataset,groups, ram, cam_type = task_generator()
+        # ------------------------------- model, dataset initialization ------------------------------- #
+        model, target_layer, dataset,groups, ram, cam_type = self._task_generator(task, method)
         self.name_str = f'{task}_{method}'  # for metric need another name
 
+
+        # ------------------------------- explaination agent initialization ------------------------------- # 
         self.agent = CAMAgent(model, target_layer, dataset,  
                                 groups, ram,
                                 # optional:
@@ -31,8 +34,10 @@ class WorkSpace:
         self.score_to_be_calculate:list[str] = []
         self.score_dict:dict = {}
 
-    def _build_callable_saliency(self, Agent):
-        pass
+    
+    def _task_generator(self, task:Literal['Imagenet'],
+                       method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam']):
+        return model, target_layer, dataset,groups, ram, cam_type
 
 
     def quantus_calculation(self, metric_name:Literal['faith', 'sensitivity'], name_str:str=''):
@@ -44,7 +49,6 @@ class WorkSpace:
 
         if metric_name==self.score_to_be_calculate[-1]:
             self.summary()
-
 
     
     def summary(self):
