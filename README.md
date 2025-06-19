@@ -33,35 +33,35 @@ The purpose of this library is to provide a method that normalizes saliency maps
 
 <details>
 <summary><b><big>Code structure (for customized modification)</big></b></summary>
-<li>The code structure of this library includes:</li>
-
+The code structure of this library includes:
+  
   > Core functions:
 
   <details>
   <summary><b><big>cam_components</big></b></summary>
-
-    The folder `cam_components` contains the core functionality of this method with the following structure:
-
-    <li>camagent.py: the agent to coordinate other components.</li>
-    <li>core: gradient calculation `activations_and_gradients.py`, feature selection `feature_selection.py`, shared core CAM framework `sharedcam.py`, rescaler  `rescale.py`.</li>
-    <li>agent: calculate the importance matrix factors `target_cam_calculation.py`, load and save importance matrix `im_func.py`</li>
-    <li>image: the function that normalize saliency maps `image_artist.py`</li>
-    <li>methods: a library of different CAM algorithms </li>
-    <li>metric: a series of metrics used for evaluatation </li>
-    <li>preparation: dataset scan to calculate upper and lower limit `analyzer_util`, model output channel calculation `model_out_reader.py`, model weights randomization `model_random.py`, save name `name_finder.py` </li>
-    <li>utils: reshape the tranformers' output to original image shape </li>
+    <p>The folder <code>cam_components</code> contains the core functionality of this method with the following structure:</p>
+    <ul>
+      <li>camagent.py: the agent to coordinate other components.</li>
+      <li>core: gradient calculation <code>activations_and_gradients.py</code>, feature selection <code>feature_selection.py</code>, shared core CAM framework <code>sharedcam.py</code>, rescaler  <code>rescale.py</code>.</li>
+      <li>agent: calculate the importance matrix factors <code>target_cam_calculation.py</code>, load and save importance matrix <code>im_func.py</code></li>
+      <li>image: the function that normalize saliency maps <code>image_artist.py</code></li>
+      <li>methods: a library of different CAM algorithms </li>
+      <li>metric: a series of metrics used for evaluation </li>
+      <li>preparation: dataset scan to calculate upper and lower limit <code>analyzer_util</code>, model output channel calculation <code>model_out_reader.py</code>, model weights randomization <code>model_random.py</code>, save name <code>name_finder.py</code></li>
+      <li>utils: reshape the transformers' output to original image shape </li>
+    </ul>
   </details>
   
   > Model and data for predefined examples:
   <details>
   <summary><b><big>predefined</big></b></summary>
-  the folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
+    The folder contains the codes used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
   </details>
   
   > Runner for predefined examples:
   <details>
   <summary><b><big>runner</big></b></summary>
-  the folder contains the runner used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
+    The folder contains the runner used for normalizing the eight datasets (MNIST, ILSVRC2012, Cats&Dogs, RSNA, LUNA, ESMIRA, ultrasound, SIIM)
   </details>
   
   > Other utils:
@@ -76,11 +76,13 @@ The purpose of this library is to provide a method that normalizes saliency maps
 
 <details>
 <summary><b><big>Metrics</big></b></summary>
-<li>Four metrics are included in this library:</li>
-<li>> Average increase and drop (decrease).</li>
-<li>> Insertion and deletion.</li>
-<li>> Correlation coefficients with model's outputs.</li>
-<li>> Perturbation (on the features) for feature-wise saliency.</li>
+Four metrics are included in this library:
+<ul>
+  <li>> Average increase and drop (decrease).</li>
+  <li>> Insertion and deletion.</li>
+  <li>> Correlation coefficients with model's outputs.</li>
+  <li>> Perturbation (on the features) for feature-wise saliency.</li>
+</ul>
 </details>
 
 
@@ -91,6 +93,7 @@ Download the files, and run:
 python setup.py install
 ```
 > **For simplest installation if the requirement already satisfied**
+
 > ctrl+c/v the <b>cam_components<b> in the file to your project
 
 
