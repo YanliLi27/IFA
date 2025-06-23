@@ -53,36 +53,4 @@ def obtain_metrics_results():
             disable_warnings=True,
         ),
     }
-
-
-    results = {
-    "Saliency": {
-        "Robustness": [0.023706467548275694],
-        "Faithfulness": [0.06749252841918861],
-        "Localisation": [0.5122173871263156],
-        "Complexity": [0.5503504513474646],
-        "Randomisation": [0.8064057449830752],
-    },
-    "GradientShap": {
-        "Robustness": [0.034456219962414575],
-        "Faithfulness": [0.04583139237937677],
-        "Localisation": [0.5046252238901434],
-        "Complexity": [0.6088842825604118],
-        "Randomisation": [0.7366918283019923],
-    },
-    "IntegratedGradients": {
-        "Robustness": [0.02690529538428082],
-        "Faithfulness": [-0.08233498797221532],
-        "Localisation": [0.5071891576864163],
-        "Complexity": [0.6107274870736773],
-        "Randomisation": [0.7915174357470123],
-    },
-    "FusionGrad": {
-        "Robustness": [5728.689449534697],
-        "Faithfulness": [0.0004617348733465858],
-        "Localisation": [0.493903066639846],
-        "Complexity": [0.5320443076081544],
-        "Randomisation": [0.006262477424033301],
-    },
-    }
-    return metrics, results
+    return metrics  # , results

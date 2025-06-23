@@ -1,91 +1,119 @@
-from quantus import FaithfulnessCorrelation, SensitivityN, MaxSensitivity, Continuity, Selectivity, RelativeInputStability
-from typing import Any, Literal 
+from typing import Literal 
+import gc
+import os
+import numpy as np
+import pandas as pd
+
 import torch
 import quantus
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from quantus_metric import obtain_metrics_results
 
+from quantus_prepare import imagenet_generator, catsdogs_generator, mnist_generator, \
+                            luna_generator, rsna_generator, siim_generator, us_generator, ddsm_generator, \
+                            esmira_generator
 from ..cam_components import CAMAgent
 
 
 class WorkSpace:
-    def __init__(self, task:Literal['Imagenet'],
+    def __init__(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira'],
                        method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam'],
-                       
+                       apply_norm:bool = True
                        ):
         # call different quantus_calculation for different purposes of evaluation
         self.task = task
         self.method = method
         # ------------------------------- model, dataset initialization ------------------------------- #
-        model, target_layer, dataset, groups, ram, cam_type = self._task_generator(task, method)
-        self.name_str = f'{task}_{method}'  # for metric need another name
+        model, target_layer, dataset, groups, ram, cam_type = self._task_generator(task)
+        self.name_str = f'{task}_{method}_norm{apply_norm}'  # for metric need another name
 
+        self.model = model
+        self.dataloader = DataLoader(dataset, batch_size=16, shuffle=True)
 
         # ------------------------------- explaination agent initialization ------------------------------- # 
-        self.agent = CAMAgent(model, target_layer, dataset,  
+        norm = 'norm' if apply_norm else False
+        self.agent = CAMAgent(model, target_layer, self.dataloader,  
                             groups, ram,
                             # optional:
                             cam_method=method, name_str=f'{self.name_str}',# cam method and im paths and cam output
                             batch_size=1, select_category=1,  # info of the running process
-                            rescale='norm',  remove_minus_flag=False, scale_ratio=2,
+                            rescale=norm,  remove_minus_flag=False, scale_ratio=2,
                             feature_selection='all', feature_selection_ratio=1.,  # feature selection
                             randomization=None,  # model randomization for sanity check
                             use_pred=False,
                             rescaler=None,  # outer scaler
                             cam_type=cam_type  # output 2D or 3D
                             )
-        
-        self.model, self.dataset = model, dataset
+
+        self.metrics = obtain_metrics_results()
+        self.results = {self.method:{}}
 
         self.score_to_be_calculate:list[str] = []
-        self.score_dict:dict = {}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        self.save_dir = r'./output/quantus'
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
+        self.save_file = f'{task}_{method}_norm{apply_norm}.txt'
+
     
-    def _task_generator(self, task:Literal['Imagenet'],
-                       method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam']):
-        return model, target_layer, dataset,groups, ram, cam_type
+    def _task_generator(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira']):
+        if task=='imagenet': return imagenet_generator()
+        if task=='catsdogs': return catsdogs_generator()
+        if task=='mnist': return mnist_generator()
+        if task=='luna': return luna_generator()
+        if task=='rsna': return rsna_generator()
+        if task=='siim': return siim_generator()
+        if task=='us': return us_generator()
+        if task=='esmira': return esmira_generator()     
+        # return model, target_layer, dataset, groups, ram, cam_type
 
 
-    def _explain_func(self, x:torch.Tensor):
+    def _explain_func(self, x:torch.Tensor) -> np.ndarray:
         # [batch, channel, (D), L, W]
         cam = self.agent.indiv_return(x, pred_flag=False) # make sure the input is a 4-dimension tensor [batch, channel, W, H]
         # [batch, group(1), cluster/tc, (D), L, W]
-        cam = cam.squeeze(axis=1).squeeze(axis=2)
+        cam = np.squeeze(cam, axis=(1, 2))
         if len(cam.shape)<len(x.shape):
-            cam = torch.unsqueeze(cam, dim=1)  # [batch, (D), L, W] -> [batch, 1, (D), L, W] 
-        cam = cam.numpy() if cam.device=='cpu' else cam.cpu().numpy()
+            cam = np.expand_dims(cam, axis=1)  # [batch, (D), L, W] -> [batch, 1, (D), L, W] 
         return cam  # [batch, channel, (D), L, W] -> [batch, 1, (D), L, W] 
+    
+
+    def run_quantus(self):
+        for metric, metric_func in self.metrics.items():
+            print(f"Evaluating {metric} of {self.method} method.")
+            gc.collect()
+            torch.cuda.empty_cache()
+            self.quantus_calculation(metric_name=metric, metric_func=metric_func)
+            gc.collect()
+            torch.cuda.empty_cache()
 
 
-    def quantus_calculation(self, metric_name:Literal['faith', 'sensitivity'], name_str:str=''):
-        # get dataloader
-        dataloader = DataLoader(self.dataset, batch_size=16, shuffle=True)
-        # metric setting
-        metric = FaithfulnessCorrelation(model=model,
-                                        explain_func=explain_func,  # 你的 Grad-CAM 或其他解释方法
-                                        task="classification",
-                                        device="cuda",
-                                        return_instance_score=True)
+    def quantus_calculation(self, metric_name:str, metric_func):
         temp_score = []
         with torch.no_grad():
-            for batch_idx, (x_batch, y_batch) in enumerate(dataloader):
-                print(f"Batch {batch_idx + 1}/{len(dataloader)}")
+            for batch_idx, (x_batch, y_batch) in enumerate(self.dataloader):
+                print(f"Batch {batch_idx + 1}/{len(self.dataloader)}")
                 # x_batch torch.Tensor [b, c, l, w]
                 cam_batch = self._explain_func(x_batch)  # [b, 1, l, w]
 
-                scores = metric(model=self.model, x_batch=x_batch, y_batch=y_batch, a_batch=cam_batch, device=self.device, 
+                scores = metric_func(model=self.model, x_batch=x_batch, y_batch=y_batch, a_batch=cam_batch, device=self.device, 
                                 explain_func=quantus.explain, explain_func_kwargs={"method": "Saliency"},)
                 temp_score.extend(scores)
 
         assert len(temp_score)>0
-        self.score_dict[metric_name] = sum(temp_score)/len(temp_score)
+        self.results[self.method][metric_name] = sum(temp_score)/len(temp_score)
 
         if metric_name==self.score_to_be_calculate[-1]:
             self.summary()
 
     
     def summary(self):
-        pass
+        # take from self.results[self.method][metric]
+        df = pd.DataFrame.from_dict(self.results, orient="index")
+        df.index.name = "method"
+        df.to_csv(os.path.join(self.save_dir, self.save_file))
+
+
 
 
