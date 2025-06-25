@@ -370,8 +370,8 @@ class CAMAgent():
                 if self.rescale=='multi':
                     rescaler = self.rescaler['uniform']
                 else:
-                    rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['uniform']
-                im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
+                    rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['None']
+                im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['None']
                 grayscale_cam, predict_category, pred_score, nega_score\
                     = self.camoperator(input_tensor=x, target_category=tc, gt=y, ifaoperation=False, 
                                         im=im, out_logit=logit_flag, rescaler=rescaler, random=random_im_mask)
@@ -512,8 +512,9 @@ class CAMAgent():
             if self.rescale=='multi':
                     rescaler = self.rescaler['uniform']
             else:
-                rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['uniform']
-            im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['uniform']
+                rescaler = self.rescaler[str(tc)] if str(tc) in self.rescaler.keys() else self.rescaler['None']
+            im = self.im[str(tc)] if str(tc) in self.im.keys() else self.im['None']
+            if self.fs=='all': im=None
             grayscale_cam, pred_category, _, _\
                 = self.camoperator(input_tensor=x, target_category=tc, gt=None, ifaoperation=False, 
                                     im=im, out_logit=False, rescaler=rescaler, random=random_im_mask)

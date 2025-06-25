@@ -1,9 +1,9 @@
-from ..predefined.natural_components.main_generator import main_generator
-from ..predefined.multi_components.generators.multi_task_generators import get_data_weight_output_path
+from predefined.natural_components.main_generator import main_generator
+from predefined.multi_components.generators.multi_task_generators import get_data_weight_output_path
 
-from ..predefined.esmira_components.generators.dataset_class import ESMIRA_generator
-from ..predefined.esmira_components.model import ModelClass
-from ..predefined.esmira_components.weight_path import output_finder
+from predefined.esmira_components.generators.dataset_class import ESMIRA_generator
+from predefined.esmira_components.model import ModelClass
+from predefined.esmira_components.weight_path import output_finder
 import os
 import torch
 

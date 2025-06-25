@@ -1,8 +1,8 @@
 from otherutil.quantus_func import WorkSpace
 
 
-if __name__=='main':
-    tasks:list = ['catsdogs', 'imagenet', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira']
+if __name__=='__main__':
+    tasks:list = ['catsdogs']#, 'imagenet', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira']
     apply_norm:list = [True, False]
     methods:list = ['gradcam', 'fullcam', 'gradcampp', 'xgradcam']
     for task in tasks:
