@@ -18,9 +18,11 @@ from tqdm import tqdm
 
 
 class WorkSpace:
-    def __init__(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira'],
+    def __init__(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira', 'ddsm'],
                        method:Literal['gradcam', 'fullcam', 'gradcampp', 'xgradcam'],
-                       apply_norm:bool = True
+                       apply_norm:bool = True,
+                       num_classes:int=2, 
+                       subset_size:int=32
                        ):
         # call different quantus_calculation for different purposes of evaluation
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -48,7 +50,7 @@ class WorkSpace:
                             cam_type=cam_type  # output 2D or 3D
                             )
 
-        self.metrics = obtain_metrics_results()
+        self.metrics = obtain_metrics_results(num_classes, subset_size)
         self.results = {self.method:{}}
 
         self.score_to_be_calculate:list[str] = [metric for metric, _ in self.metrics.items()]
@@ -58,7 +60,7 @@ class WorkSpace:
         self.save_file = f'{task}_{method}_norm{apply_norm}.txt'
 
     
-    def _task_generator(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira']):
+    def _task_generator(self, task:Literal['imagenet', 'catsdogs', 'mnist', 'luna', 'rsna', 'siim', 'us', 'esmira', 'ddsm']):
         if task=='imagenet': return imagenet_generator()
         if task=='catsdogs': return catsdogs_generator()
         if task=='mnist': return mnist_generator()
@@ -66,7 +68,8 @@ class WorkSpace:
         if task=='rsna': return rsna_generator()
         if task=='siim': return siim_generator()
         if task=='us': return us_generator()
-        if task=='esmira': return esmira_generator()     
+        if task=='esmira': return esmira_generator() 
+        if task=='ddsm': return ddsm_generator()    
         # return model, target_layer, dataset, groups, ram, cam_type
 
 
@@ -83,17 +86,17 @@ class WorkSpace:
         return cam  # [batch, channel, (D), L, W] -> [batch, 1, (D), L, W] 
     
 
-    def run_quantus(self):
+    def run_quantus(self, max_iter:int=5000):
         for metric, metric_func in self.metrics.items():
             print(f"Evaluating {metric} of {self.method} method with norm{self.norm}.")
             gc.collect()
             torch.cuda.empty_cache()
-            self.quantus_calculation(metric_name=metric, metric_func=metric_func)
+            self.quantus_calculation(metric_name=metric, metric_func=metric_func, max_iter=max_iter)
             gc.collect()
             torch.cuda.empty_cache()
 
 
-    def quantus_calculation(self, metric_name:str, metric_func):
+    def quantus_calculation(self, metric_name:str, metric_func, max_iter:int=5000):
         temp_score = []
         for batch_idx, (x_batch, y_batch) in tqdm(enumerate(self.dataloader)):
             # print(f"Batch {batch_idx + 1}/{len(self.dataloader)}")
@@ -102,15 +105,23 @@ class WorkSpace:
             x_batch = x_batch.cpu().numpy()
             y_batch = y_batch.cpu().numpy()
             #scores = metric_func(model=self.model, x_batch=x_batch, y_batch=y_batch, a_batch=cam_batch, device=self.device)
-            scores = metric_func(model=self.model,
-                                x_batch=x_batch,
-                                y_batch=y_batch,
-                                device=self.device,
-                                explain_func=self._explain_func,
-                                )
-            temp_score.extend(scores)
+            try:
+                scores = metric_func(model=self.model,
+                                    x_batch=x_batch,
+                                    y_batch=y_batch,
+                                    device=self.device,
+                                    explain_func=self._explain_func,
+                                    )
+                if scores[0]>10 or scores[0]<-10 or (not isinstance(scores[0], np.float64)): 
+                    continue
+                temp_score.extend(scores)
+            except:
+                continue
+            if max_iter and batch_idx>max_iter: break
+            
 
         assert len(temp_score)>0
+        temp_score = [x for x in temp_score if not np.isnan(x)]
         self.results[self.method][metric_name] = sum(temp_score)/len(temp_score)
 
         self.summary()
